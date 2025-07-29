@@ -1,0 +1,73 @@
+{
+    "name": "HF Eco2AI Plugin Development",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "dev",
+    "workspaceFolder": "/app",
+    
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.flake8",
+                "ms-python.black-formatter",
+                "charliermarsh.ruff",
+                "ms-python.mypy-type-checker",
+                "ms-toolsai.jupyter",
+                "tamasfe.even-better-toml",
+                "ms-vscode.makefile-tools",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "ms-azuretools.vscode-docker",
+                "eamodio.gitlens"
+            ],
+            
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": false,
+                "python.linting.flake8Enabled": false,
+                "python.linting.mypyEnabled": true,
+                "python.formatting.provider": "black",
+                "python.testing.pytestEnabled": true,
+                "python.testing.unittestEnabled": false,
+                "files.exclude": {
+                    "**/__pycache__": true,
+                    "**/*.pyc": true,
+                    ".pytest_cache": true,
+                    ".mypy_cache": true,
+                    ".ruff_cache": true
+                },
+                "editor.formatOnSave": true,
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": true
+                }
+            }
+        }
+    },
+    
+    "forwardPorts": [3000, 9090],
+    "portsAttributes": {
+        "3000": {
+            "label": "Grafana",
+            "onAutoForward": "notify"
+        },
+        "9090": {
+            "label": "Prometheus", 
+            "onAutoForward": "silent"
+        }
+    },
+    
+    "postCreateCommand": "make install-dev && pre-commit install",
+    
+    "remoteUser": "appuser",
+    
+    "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    ]
+}

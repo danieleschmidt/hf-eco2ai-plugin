@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # Main application service
+  hf-eco2ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        BUILD_DATE: ${BUILD_DATE:-2025-01-01}
+        VCS_REF: ${VCS_REF:-dev}
+        VERSION: ${VERSION:-0.1.0}
+    image: hf-eco2ai-plugin:latest
+    container_name: hf-eco2ai-plugin
+    restart: unless-stopped
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data:rw
+      - ./logs:/app/logs:rw
+    networks:
+      - eco2ai-network
+
+  # Development service with mounted source code
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: hf-eco2ai-plugin:dev
+    container_name: hf-eco2ai-dev
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app:rw
+      - pip-cache:/root/.cache/pip
+    working_dir: /app
+    networks:
+      - eco2ai-network
+    command: bash
+
+  # Prometheus monitoring (optional)
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: eco2ai-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - eco2ai-network
+    profiles:
+      - monitoring
+
+  # Grafana dashboards (optional) 
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: eco2ai-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - eco2ai-network
+    profiles:
+      - monitoring
+    depends_on:
+      - prometheus
+
+  # Testing service
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: hf-eco2ai-plugin:test
+    container_name: hf-eco2ai-test
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app:rw
+      - test-results:/app/test-results
+    working_dir: /app
+    networks:
+      - eco2ai-network
+    command: make test
+    profiles:
+      - testing
+
+volumes:
+  pip-cache:
+  prometheus-data:
+  grafana-data:
+  test-results:
+
+networks:
+  eco2ai-network:
+    driver: bridge
