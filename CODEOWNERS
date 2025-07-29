@@ -1,0 +1,44 @@
+# CODEOWNERS for automated code review assignment
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global ownership - Default reviewers for all files
+* @terragonlabs/maintainers
+
+# Core source code
+/src/ @terragonlabs/core-developers @terragonlabs/maintainers
+
+# Configuration and infrastructure
+/pyproject.toml @terragonlabs/maintainers
+/Dockerfile @terragonlabs/infrastructure 
+/docker-compose.yml @terragonlabs/infrastructure
+/.github/ @terragonlabs/maintainers
+/.devcontainer/ @terragonlabs/infrastructure
+
+# Security and compliance
+/SECURITY.md @terragonlabs/security
+/COMPLIANCE.md @terragonlabs/security @terragonlabs/maintainers
+/.bandit @terragonlabs/security
+/.pre-commit-config.yaml @terragonlabs/security
+
+# Documentation
+/README.md @terragonlabs/maintainers @terragonlabs/documentation
+/docs/ @terragonlabs/documentation
+/ARCHITECTURE.md @terragonlabs/core-developers @terragonlabs/maintainers
+
+# Testing and quality assurance
+/tests/ @terragonlabs/qa @terragonlabs/core-developers
+/benchmarks/ @terragonlabs/performance @terragonlabs/core-developers
+/pytest.ini @terragonlabs/qa
+/tox.ini @terragonlabs/qa
+
+# Monitoring and observability
+/docker/grafana/ @terragonlabs/observability
+/docker/prometheus.yml @terragonlabs/observability
+
+# Dependencies and package management
+/.github/dependabot.yml @terragonlabs/maintainers
+/requirements*.txt @terragonlabs/maintainers
+
+# Legal and licensing
+/LICENSE @terragonlabs/legal @terragonlabs/maintainers
+/CODE_OF_CONDUCT.md @terragonlabs/maintainers

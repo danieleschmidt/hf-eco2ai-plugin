@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.black-formatter", 
+    "ms-python.isort",
+    "ms-python.mypy-type-checker",
+    "ms-python.pylint",
+    "ms-vscode.test-adapter-converter",
+    "littlefoxteam.vscode-python-test-adapter",
+    "redhat.vscode-yaml",
+    "ms-vscode.vscode-json",
+    "github.vscode-github-actions",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode.makefile-tools",
+    "gruntfuggly.todo-tree",
+    "christian-kohler.path-intellisense",
+    "visualstudioexptteam.vscodeintellicode",
+    "github.copilot",
+    "eamodio.gitlens",
+    "ms-python.vscode-pylance"
+  ],
+  "unwantedRecommendations": [
+    "ms-python.flake8"
+  ]
+}

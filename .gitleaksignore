@@ -1,0 +1,23 @@
+# GitLeaks ignore file
+# https://github.com/gitleaks/gitleaks
+
+# Test fixtures and mock data
+tests/fixtures/*
+tests/data/*
+**/test_*.py:password
+**/test_*.py:secret
+
+# Documentation examples (not real secrets)
+README.md:api_key
+docs/**/*.md:token
+docs/**/*.rst:password
+
+# Configuration templates
+*.template:secret
+*.example:password
+.env.example
+
+# Generated files
+coverage.xml
+.coverage
+*.log
