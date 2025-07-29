@@ -45,12 +45,19 @@ dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "pytest-mock>=3.10.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-xdist>=3.0.0", 
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.5.0",
     "pre-commit>=3.0.0",
     "sphinx>=6.0.0",
     "sphinx-rtd-theme>=1.3.0",
+    "bandit[toml]>=1.7.5",
+    "safety>=2.3.0",
+    "pip-audit>=2.6.0",
+    "mutmut>=2.4.0",
+    "cyclonedx-bom>=4.0.0",
 ]
 all = [
     "hf-eco2ai-plugin[lightning,mlflow,grafana,dev]"
@@ -139,8 +146,10 @@ addopts = [
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
+    "integration: marks tests as integration tests", 
     "gpu: marks tests that require GPU",
+    "contract: marks tests as API contract tests",
+    "mutation: marks tests for mutation testing",
 ]
 
 [tool.coverage.run]
@@ -164,3 +173,16 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101", "B601"]
+
+[tool.bandit.assert_used]
+skips = ["*_test.py", "*/test_*.py"]
+
+[tool.mutmut]
+paths_to_mutate = "src/"
+backup = false
+runner = "python -m pytest tests/"
+tests_dir = "tests/"
