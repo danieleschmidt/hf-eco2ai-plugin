@@ -1,0 +1,166 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hf-eco2ai-plugin"
+version = "0.1.0"
+description = "Hugging Face Trainer callback for CO₂ tracking with Eco2AI"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Daniel Schmidt", email = "daniel@terragonlabs.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["huggingface", "transformers", "carbon", "eco2ai", "sustainability", "ml"]
+requires-python = ">=3.10"
+dependencies = [
+    "transformers>=4.40.0",
+    "torch>=2.0.0",
+    "eco2ai>=2.0.0",
+    "pynvml>=11.5.0",
+    "prometheus-client>=0.20.0",
+    "pandas>=2.0.0",
+    "plotly>=5.20.0",
+    "carbontracker>=1.5.0",
+    "codecarbon>=2.3.0",
+]
+
+[project.optional-dependencies]
+lightning = ["pytorch-lightning>=2.2.0"]
+mlflow = ["mlflow>=2.0.0"]
+grafana = ["grafana-api>=1.0.3"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.0.0",
+    "sphinx>=6.0.0",
+    "sphinx-rtd-theme>=1.3.0",
+]
+all = [
+    "hf-eco2ai-plugin[lightning,mlflow,grafana,dev]"
+]
+
+[project.urls]
+Homepage = "https://github.com/terragonlabs/hf-eco2ai-plugin"
+Documentation = "https://hf-eco2ai.readthedocs.io"
+Repository = "https://github.com/terragonlabs/hf-eco2ai-plugin"
+"Bug Tracker" = "https://github.com/terragonlabs/hf-eco2ai-plugin/issues"
+
+[project.scripts]
+hf-eco2ai = "hf_eco2ai.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+hf_eco2ai = ["py.typed", "data/*.json"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["B011"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "eco2ai.*",
+    "pynvml.*",
+    "carbontracker.*",
+    "codecarbon.*",
+    "prometheus_client.*",
+    "grafana_api.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=hf_eco2ai",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "gpu: marks tests that require GPU",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__main__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
