@@ -1,0 +1,1 @@
+# Integration tests for HF Eco2AI Plugin

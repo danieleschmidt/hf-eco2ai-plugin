@@ -1,0 +1,31 @@
+[bandit]
+# Bandit configuration for HF Eco2AI Plugin security scanning
+
+# Test IDs to skip (comma-separated)
+skips = B101,B601
+
+# Test IDs to include (comma-separated) - overrides skips
+# tests = 
+
+# Paths to exclude from scanning
+exclude_dirs = /tests,/docs,/build,/dist
+
+# File glob patterns to exclude
+exclude = **/*_test.py,**/test_*.py,**/conftest.py
+
+# Confidence level filter (HIGH, MEDIUM, LOW)
+confidence = MEDIUM
+
+# Severity level filter (HIGH, MEDIUM, LOW) 
+severity = MEDIUM
+
+# Output format (json, yaml, txt, csv, xml)
+format = txt
+
+# Additional Bandit configuration
+[bandit.assert_used]
+skips = ['*_test.py', 'test_*.py']
+
+[bandit.hardcoded_password]
+# Ignore test passwords and example configurations
+word_list = ['password', 'secret', 'token', 'key', 'api_key']
