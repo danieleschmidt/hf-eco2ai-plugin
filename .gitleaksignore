@@ -21,3 +21,20 @@ docs/**/*.rst:password
 coverage.xml
 .coverage
 *.log
+
+# ML/AI specific patterns
+**/model_id:*
+**/checkpoint-*:*
+**/transformers_cache:*
+**/.cache/huggingface:*
+
+# Prometheus/Grafana configuration
+docker/prometheus.yml:*
+docker/grafana/**:*
+
+# Known safe commit hashes in documentation
+commit:a5a27f0*
+commit:91891ea*
+commit:0a64e15*
+commit:552ed09*
+commit:a412041*
