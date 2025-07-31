@@ -4,7 +4,7 @@
 This repository has been enhanced with enterprise-grade GitHub Actions workflows that require manual setup due to GitHub security restrictions.
 
 ## Required Workflows
-The following workflow files have been prepared and need to be manually copied to `.github/workflows/`:
+The following workflow files have been prepared in `docs/workflows/production/` and need to be manually copied to `.github/workflows/`:
 
 ### 1. Core CI/CD (`ci.yml`)
 - **Purpose**: Multi-platform continuous integration 
@@ -37,8 +37,11 @@ The following workflow files have been prepared and need to be manually copied t
 # Navigate to repository root
 cd /path/to/hf-eco2ai-plugin
 
-# Copy prepared workflows (files are in .github/workflows/)
-cp .github/workflows/*.yml .github/workflows/
+# Create workflows directory
+mkdir -p .github/workflows
+
+# Copy prepared workflows from documentation
+cp docs/workflows/production/*.yml .github/workflows/
 ```
 
 ### Step 2: Configure Secrets
