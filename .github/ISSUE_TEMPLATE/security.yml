@@ -1,0 +1,51 @@
+name: 🔒 Security Vulnerability Report
+description: Report a security vulnerability (private disclosure)
+labels: ["security", "vulnerability"]
+assignees:
+  - terragonlabs/security
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **⚠️ IMPORTANT: For security vulnerabilities, please use private disclosure:**
+        - Email: security@terragonlabs.com
+        - GitHub Security Advisories (recommended)
+        
+        This template is for non-sensitive security improvements only.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity Level
+      description: How severe is this security issue?
+      options:
+        - Low (security enhancement)
+        - Medium (potential security risk)
+        - High (active security vulnerability)
+        - Critical (immediate security threat)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description  
+    attributes:
+      label: Security Issue Description
+      description: Describe the security concern or enhancement
+      placeholder: Please describe the security issue...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What could happen if this issue is exploited?
+      placeholder: Describe potential security impact...
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: Any suggestions for fixing this issue?
+      placeholder: Suggested fix or mitigation...
