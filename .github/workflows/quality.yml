@@ -1,0 +1,43 @@
+# Code Quality Gates
+name: Quality Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Check code formatting
+      run: black --check src/ tests/
+
+    - name: Lint with Ruff
+      run: ruff check src/ tests/
+
+    - name: Type check with MyPy
+      run: mypy src/
+
+    - name: Test coverage check
+      run: |
+        pytest --cov=hf_eco2ai --cov-report=term --cov-fail-under=85
+
+    - name: Complexity check
+      run: |
+        pip install radon
+        radon cc src/ --min=B
+        radon mi src/ --min=B
