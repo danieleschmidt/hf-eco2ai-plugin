@@ -41,6 +41,19 @@ dependencies = [
 lightning = ["pytorch-lightning>=2.2.0"]
 mlflow = ["mlflow>=2.0.0"]
 grafana = ["grafana-api>=1.0.3"]
+ai-ops = [
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0", 
+    "opentelemetry-instrumentation-requests>=0.41b0",
+    "structlog>=23.0.0",
+    "rich>=13.0.0"
+]
+optimization = [
+    "numba>=0.58.0",
+    "asyncio-throttle>=1.0.2",
+    "aiohttp>=3.9.0",
+    "orjson>=3.9.0"
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
@@ -61,7 +74,7 @@ dev = [
     "git-cliff>=1.4.0",
 ]
 all = [
-    "hf-eco2ai-plugin[lightning,mlflow,grafana,dev]"
+    "hf-eco2ai-plugin[lightning,mlflow,grafana,ai-ops,optimization,dev]"
 ]
 
 [project.urls]

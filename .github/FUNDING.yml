@@ -1,0 +1,5 @@
+# Funding configuration for HF Eco2AI Plugin
+# https://help.github.com/articles/displaying-a-sponsor-button-in-your-repository
+
+github: [danieleschmidt]
+custom: ["https://terragonlabs.com/sponsor", "https://ko-fi.com/terragonlabs"]
