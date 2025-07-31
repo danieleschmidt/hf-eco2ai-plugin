@@ -1,0 +1,39 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticPrefixFixDepsChoreOthers",
+    ":gitSignOff"
+  ],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "🤖 Renovate Dashboard",
+  "rebaseWhen": "conflicted",
+  "schedule": ["after 2am and before 4am on monday"],
+  "timezone": "UTC",
+  "labels": ["dependencies"],
+  "assignees": ["@danieleschmidt"],
+  "reviewers": ["@danieleschmidt"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["transformers", "torch", "eco2ai"],
+      "labels": ["ml-deps", "critical"],
+      "reviewers": ["@danieleschmidt"],
+      "schedule": ["at any time"]
+    },
+    {
+      "matchPackageNames": ["pytest", "black", "ruff", "mypy"],
+      "groupName": "dev tools",
+      "schedule": ["every weekend"]
+    },
+    {
+      "matchPackageNames": ["prometheus-client", "grafana-api"],
+      "groupName": "monitoring",
+      "labels": ["monitoring"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "assignees": ["@danieleschmidt"]
+  },
+  "osvVulnerabilityAlerts": true
+}
