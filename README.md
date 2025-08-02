@@ -3,9 +3,12 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Hugging Face](https://img.shields.io/badge/HF-Transformers-yellow.svg)](https://huggingface.co/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Carbon](https://img.shields.io/badge/Carbon-Tracking-green.svg)](https://github.com/yourusername/hf-eco2ai-plugin)
+[![Carbon](https://img.shields.io/badge/Carbon-Tracking-green.svg)](https://github.com/danieleschmidt/hf-eco2ai-plugin)
+[![CI/CD](https://github.com/danieleschmidt/hf-eco2ai-plugin/workflows/Comprehensive%20CI%2FCD/badge.svg)](https://github.com/danieleschmidt/hf-eco2ai-plugin/actions)
+[![Security](https://github.com/danieleschmidt/hf-eco2ai-plugin/workflows/Security/badge.svg)](https://github.com/danieleschmidt/hf-eco2ai-plugin/actions)
+[![Carbon Tracking](https://github.com/danieleschmidt/hf-eco2ai-plugin/workflows/Carbon%20Tracking/badge.svg)](https://github.com/danieleschmidt/hf-eco2ai-plugin/actions)
 
-A Hugging Face Trainer callback that logs CO₂, kWh, and regional grid intensity for every epoch. Built on Eco2AI's best-in-class energy tracking.
+A comprehensive Hugging Face Trainer callback that logs CO₂, kWh, and regional grid intensity for every epoch. Built on Eco2AI's energy tracking with enterprise-grade monitoring, automation, and sustainability features.
 
 ## 🌱 Overview
 
@@ -14,8 +17,21 @@ Eco2AI hit HackerNews for accurate energy tracking, but lacks integration with p
 - **Seamless HF integration** - Just add one callback
 - **Real-time carbon tracking** - CO₂ emissions per epoch/step
 - **Regional grid data** - Accurate carbon intensity by location
-- **Prometheus export** - For production monitoring
-- **Beautiful dashboards** - Grafana templates included
+- **Enterprise monitoring** - Prometheus/Grafana stack with alerting
+- **Automation & CI/CD** - Comprehensive workflows and maintenance
+- **Security & compliance** - Multi-tool security scanning and reporting
+- **Sustainability optimization** - Carbon budget enforcement and optimization recommendations
+
+## 🏗️ Enterprise Features
+
+### Comprehensive SDLC Implementation
+- **Project Foundation**: ADRs, roadmaps, charters, and comprehensive documentation
+- **Development Environment**: Pre-commit hooks, version consistency, configuration validation
+- **Testing Infrastructure**: Unit, integration, performance, and E2E test suites
+- **Build & Containerization**: Multi-stage builds, security scanning, SBOM generation
+- **Monitoring & Observability**: Prometheus/Grafana stack with custom dashboards and alerts
+- **Workflow Automation**: GitHub Actions templates for CI/CD, security, and carbon tracking
+- **Metrics & Automation**: Real-time metrics collection, automated maintenance, and reporting
 
 ## ⚡ Key Metrics
 
@@ -48,14 +64,34 @@ codecarbon>=2.3.0
 
 ## 🛠️ Installation
 
+### Quick Setup (Recommended)
+
 ```bash
-# From PyPI
+# Clone repository
+git clone https://github.com/danieleschmidt/hf-eco2ai-plugin.git
+cd hf-eco2ai-plugin
+
+# Run automated setup (includes environment, monitoring, and validation)
+python scripts/final-integration.py --task all
+
+# Verify installation
+python scripts/validate-setup.py --category all
+```
+
+### Manual Installation
+
+```bash
+# From PyPI (when published)
 pip install hf-eco2ai-plugin
 
 # From source
-git clone https://github.com/yourusername/hf-eco2ai-plugin.git
+git clone https://github.com/danieleschmidt/hf-eco2ai-plugin.git
 cd hf-eco2ai-plugin
-pip install -e .
+pip install -e .[dev,all]
+
+# Set up development environment
+pre-commit install
+cp .env.example .env
 ```
 
 ## 🚀 Quick Start
@@ -338,7 +374,31 @@ with mlflow.start_run():
 
 ## 🚦 CI/CD Integration
 
-### GitHub Actions
+### Comprehensive GitHub Actions Workflows
+
+The project includes enterprise-grade workflow templates:
+
+```bash
+# Set up workflows (requires repository admin)
+cp docs/workflows/comprehensive-ci.yml.template .github/workflows/ci.yml
+cp docs/workflows/security.yml.template .github/workflows/security.yml
+cp docs/workflows/carbon-tracking.yml.template .github/workflows/carbon-tracking.yml
+cp docs/workflows/dependency-update.yml.template .github/workflows/dependency-update.yml
+
+# Configure repository secrets (in GitHub Settings → Secrets)
+# CODECOV_TOKEN, PYPI_API_TOKEN, SLACK_WEBHOOK_URL
+```
+
+### Features
+
+- **Multi-OS Testing**: Ubuntu, Windows, macOS with Python 3.10-3.12
+- **Security Scanning**: Bandit, Safety, pip-audit, CodeQL, TruffleHog
+- **Carbon Tracking**: Automated CI/CD footprint monitoring with budget enforcement
+- **Dependency Management**: Automated security updates and dependency maintenance
+- **Quality Gates**: Pre-commit hooks, test coverage, security validation
+- **Automated Releases**: Semantic versioning, changelog generation, PyPI publishing
+
+### Example Training with Carbon Tracking
 
 ```yaml
 # .github/workflows/train.yml
@@ -350,20 +410,21 @@ jobs:
   train:
     runs-on: gpu-runner
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Train model
       run: |
         python train.py --carbon-tracking
     
-    - name: Check carbon impact
+    - name: Check carbon budget
       run: |
+        python scripts/collect-metrics.py --update
         python -m hf_eco2ai check-budget \
           --report carbon_impact.json \
           --max-co2 5.0
     
     - name: Upload carbon report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: carbon-report
         path: carbon_impact.json
@@ -447,16 +508,64 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 MIT License - See [LICENSE](LICENSE) for details.
 
+## 📊 Enterprise Management
+
+### Automated Metrics Collection
+
+```bash
+# Real-time metrics collection
+python scripts/collect-metrics.py --update --format summary
+
+# Maintenance automation
+python scripts/maintenance.py --task full --dry-run
+
+# Integration management
+python scripts/integration-tools.py --action all
+```
+
+### Monitoring Stack
+
+```bash
+# Start monitoring services
+docker-compose up -d
+
+# Access dashboards
+open http://localhost:3000  # Grafana
+open http://localhost:9090  # Prometheus
+open http://localhost:9093  # Alertmanager
+```
+
+### Validation and Setup
+
+```bash
+# Comprehensive validation
+python scripts/validate-setup.py --category all
+
+# Setup verification
+python scripts/final-integration.py --task validation
+```
+
 ## 🔗 Resources
 
-- [Documentation](https://hf-eco2ai.readthedocs.io)
-- [Example Notebooks](https://github.com/hf-eco2ai/examples)
-- [Carbon Dashboards](https://github.com/hf-eco2ai/dashboards)
-- [Blog Post](https://medium.com/@hf-eco2ai/tracking-ai-carbon)
-- [Discord Community](https://discord.gg/green-ai)
+### Documentation
+- [Setup Guide](docs/SETUP_GUIDE.md) - Complete environment setup
+- [Operations Manual](docs/OPERATIONS_MANUAL.md) - Daily operations and maintenance
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [API Reference](docs/api/API_REFERENCE.md) - Comprehensive API documentation
+- [Workflow Setup Guide](docs/workflows/WORKFLOW_SETUP_GUIDE.md) - GitHub Actions configuration
+
+### Architecture Documents
+- [ADR Template](docs/adr/0001-architecture-decision-template.md) - Decision documentation standard
+- [Project Charter](PROJECT_CHARTER.md) - Project scope and objectives
+- [Roadmap](docs/ROADMAP.md) - Development roadmap and milestones
+
+### Monitoring & Automation
+- [Monitoring Guide](docs/monitoring/monitoring-guide.md) - Complete monitoring setup
+- [Carbon Runbooks](docs/runbooks/carbon-emissions-runbook.md) - Emergency procedures
+- [Deployment Guide](docs/deployment/deployment-guide.md) - Multi-environment deployment
 
 ## 📧 Contact
 
-- **GitHub Issues**: Bug reports and features
-- **Email**: hf-eco2ai@yourdomain.com
-- **Twitter**: [@HFEco2AI](https://twitter.com/hfeco2ai)
+- **GitHub Issues**: Bug reports and feature requests
+- **GitHub Discussions**: Questions and community support
+- **Repository**: [danieleschmidt/hf-eco2ai-plugin](https://github.com/danieleschmidt/hf-eco2ai-plugin)
