@@ -1,0 +1,503 @@
+# Comprehensive CI/CD Pipeline for HF Eco2AI Plugin
+# This template provides enterprise-grade testing, security, and deployment automation
+
+name: Comprehensive CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened ]
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly Sunday 2 AM UTC
+
+env:
+  PYTHON_DEFAULT: '3.11'
+  POETRY_VERSION: '1.7.1'
+  PIP_CACHE_DIR: /tmp/pip-cache
+  PRE_COMMIT_CACHE_DIR: /tmp/pre-commit-cache
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # VALIDATION JOBS
+  # ============================================================================
+  
+  validate-metadata:
+    name: Validate Project Metadata
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      python-versions: ${{ steps.versions.outputs.python-versions }}
+      test-matrix: ${{ steps.matrix.outputs.test-matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_DEFAULT }}
+      
+      - name: Install validation tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install toml-sort pyproject-api check-manifest
+      
+      - name: Validate pyproject.toml
+        run: |
+          python -c "import tomllib; tomllib.load(open('pyproject.toml', 'rb'))"
+          toml-sort --check pyproject.toml
+      
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+      
+      - name: Extract Python versions
+        id: versions
+        run: |
+          VERSIONS=$(python -c "import tomllib; import json; print(json.dumps([v.split('.')[:2] for v in tomllib.load(open('pyproject.toml', 'rb'))['project']['classifiers'] if 'Programming Language :: Python ::' in v and v.split('::')[-1].strip().replace('.', '').isdigit()]))")
+          echo "python-versions=$VERSIONS" >> $GITHUB_OUTPUT
+      
+      - name: Generate test matrix
+        id: matrix
+        run: |
+          cat > matrix.json << 'EOF'
+          {
+            "include": [
+              {
+                "os": "ubuntu-latest",
+                "python-version": "3.10",
+                "test-type": "unit",
+                "coverage": true
+              },
+              {
+                "os": "ubuntu-latest",
+                "python-version": "3.11",
+                "test-type": "integration",
+                "coverage": true
+              },
+              {
+                "os": "ubuntu-latest",
+                "python-version": "3.12",
+                "test-type": "e2e",
+                "coverage": false
+              },
+              {
+                "os": "windows-latest",
+                "python-version": "3.11",
+                "test-type": "unit",
+                "coverage": false
+              },
+              {
+                "os": "macos-latest",
+                "python-version": "3.11",
+                "test-type": "unit",
+                "coverage": false
+              }
+            ]
+          }
+          EOF
+          echo "test-matrix=$(cat matrix.json | jq -c .)" >> $GITHUB_OUTPUT
+
+  pre-commit:
+    name: Pre-commit Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_DEFAULT }}
+      
+      - name: Cache pre-commit
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PRE_COMMIT_CACHE_DIR }}
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-
+      
+      - name: Install pre-commit
+        run: pip install pre-commit
+      
+      - name: Run pre-commit
+        run: pre-commit run --all-files --show-diff-on-failure
+        env:
+          PRE_COMMIT_HOME: ${{ env.PRE_COMMIT_CACHE_DIR }}
+
+  # ============================================================================
+  # SECURITY JOBS
+  # ============================================================================
+  
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_DEFAULT }}
+      
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit[toml] safety pip-audit
+      
+      - name: Run Bandit security scan
+        run: |
+          bandit -r src/ -f json -o bandit-report.json
+          bandit -r src/ -f txt
+        continue-on-error: true
+      
+      - name: Run Safety dependency scan
+        run: |
+          safety check --json --output safety-report.json
+          safety check
+        continue-on-error: true
+      
+      - name: Run pip-audit
+        run: |
+          pip-audit --format=json --output=pip-audit-report.json
+          pip-audit
+        continue-on-error: true
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          queries: security-extended,security-and-quality
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
+      
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+            pip-audit-report.json
+          retention-days: 90
+
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Run TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  # ============================================================================
+  # TESTING JOBS
+  # ============================================================================
+  
+  test:
+    name: Test (${{ matrix.os }}, Python ${{ matrix.python-version }}, ${{ matrix.test-type }})
+    runs-on: ${{ matrix.os }}
+    needs: [validate-metadata]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.validate-metadata.outputs.test-matrix) }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PIP_CACHE_DIR }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev,all]
+      
+      - name: Run unit tests
+        if: matrix.test-type == 'unit'
+        run: |
+          pytest tests/unit/ \
+            --cov=hf_eco2ai \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --cov-fail-under=80 \
+            --junitxml=junit-unit.xml \
+            -v
+      
+      - name: Run integration tests
+        if: matrix.test-type == 'integration'
+        run: |
+          pytest tests/integration/ \
+            --cov=hf_eco2ai \
+            --cov-append \
+            --cov-report=xml \
+            --cov-report=html \
+            --cov-report=term-missing \
+            --junitxml=junit-integration.xml \
+            -v
+      
+      - name: Run end-to-end tests
+        if: matrix.test-type == 'e2e'
+        run: |
+          pytest tests/e2e/ \
+            --junitxml=junit-e2e.xml \
+            -v
+        env:
+          # Mock external services for E2E tests
+          HF_ECO2AI_MOCK_EXTERNAL=true
+      
+      - name: Run performance tests
+        if: matrix.test-type == 'integration'
+        run: |
+          pytest tests/performance/ \
+            --benchmark-only \
+            --benchmark-json=benchmark-results.json \
+            -v
+      
+      - name: Upload coverage to Codecov
+        if: matrix.coverage && !cancelled()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: ${{ matrix.test-type }}
+          name: codecov-${{ matrix.os }}-${{ matrix.python-version }}
+          fail_ci_if_error: true
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.test-type }}
+          path: |
+            junit-*.xml
+            htmlcov/
+            benchmark-results.json
+          retention-days: 30
+
+  # ============================================================================
+  # DOCUMENTATION JOBS
+  # ============================================================================
+  
+  docs:
+    name: Documentation Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_DEFAULT }}
+      
+      - name: Install documentation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+          pip install sphinx sphinx-rtd-theme myst-parser
+      
+      - name: Build documentation
+        run: |
+          cd docs
+          make html SPHINXOPTS="-W --keep-going"
+      
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: docs/_build/html
+          retention-days: 30
+
+  # ============================================================================
+  # PACKAGING JOBS
+  # ============================================================================
+  
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    needs: [test, security-scan]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_DEFAULT }}
+      
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine check-manifest
+      
+      - name: Check manifest
+        run: check-manifest
+      
+      - name: Build package
+        run: python -m build
+      
+      - name: Check package
+        run: |
+          twine check dist/*
+          python -m pip install dist/*.whl
+          python -c "import hf_eco2ai; print(hf_eco2ai.__version__)"
+      
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+          retention-days: 90
+
+  # ============================================================================
+  # QUALITY GATES
+  # ============================================================================
+  
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [pre-commit, security-scan, test, docs, build]
+    if: always()
+    steps:
+      - name: Check job results
+        run: |
+          echo "Pre-commit: ${{ needs.pre-commit.result }}"
+          echo "Security: ${{ needs.security-scan.result }}"
+          echo "Tests: ${{ needs.test.result }}"
+          echo "Docs: ${{ needs.docs.result }}"
+          echo "Build: ${{ needs.build.result }}"
+          
+          if [[ "${{ needs.pre-commit.result }}" != "success" || \
+                "${{ needs.security-scan.result }}" != "success" || \
+                "${{ needs.test.result }}" != "success" || \
+                "${{ needs.docs.result }}" != "success" || \
+                "${{ needs.build.result }}" != "success" ]]; then
+            echo "Quality gate failed!"
+            exit 1
+          else
+            echo "Quality gate passed!"
+          fi
+
+  # ============================================================================
+  # DEPLOYMENT JOBS
+  # ============================================================================
+  
+  deploy-test:
+    name: Deploy to Test PyPI
+    runs-on: ubuntu-latest
+    needs: [quality-gate, validate-metadata]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/hf-eco2ai-plugin
+    permissions:
+      id-token: write  # For OIDC
+    steps:
+      - name: Download package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist/
+      
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  # ============================================================================
+  # NOTIFICATION JOBS
+  # ============================================================================
+  
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [quality-gate]
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    steps:
+      - name: Notify Slack on success
+        if: needs.quality-gate.result == 'success'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '✅ CI/CD pipeline completed successfully for ${{ github.ref }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Notify Slack on failure
+        if: needs.quality-gate.result == 'failure'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: '❌ CI/CD pipeline failed for ${{ github.ref }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ============================================================================
+  # CLEANUP JOBS
+  # ============================================================================
+  
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [quality-gate]
+    if: always()
+    steps:
+      - name: Clean up artifacts
+        run: |
+          echo "Cleaning up temporary artifacts..."
+          # Cleanup logic would go here
+          echo "Cleanup completed"

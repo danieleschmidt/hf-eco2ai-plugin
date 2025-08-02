@@ -1,0 +1,470 @@
+# Carbon Tracking and Sustainability Workflow
+# This workflow monitors and enforces carbon budgets for CI/CD operations
+
+name: Carbon Tracking
+
+on:
+  workflow_run:
+    workflows: ["Comprehensive CI/CD"]
+    types: [completed]
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+    inputs:
+      force_report:
+        description: 'Force generate carbon report'
+        required: false
+        default: 'false'
+        type: boolean
+      budget_check:
+        description: 'Perform carbon budget check'
+        required: false
+        default: 'true'
+        type: boolean
+
+env:
+  CARBON_BUDGET_DAILY_KG: 5.0
+  CARBON_BUDGET_MONTHLY_KG: 100.0
+  ENERGY_BUDGET_DAILY_KWH: 15.0
+  GITHUB_CARBON_API: 'https://api.github.com/repos/${{ github.repository }}/actions/runs'
+
+jobs:
+  # ============================================================================
+  # CARBON FOOTPRINT CALCULATION
+  # ============================================================================
+  
+  calculate-footprint:
+    name: Calculate CI/CD Carbon Footprint
+    runs-on: ubuntu-latest
+    outputs:
+      total-co2-kg: ${{ steps.calculate.outputs.total-co2-kg }}
+      total-energy-kwh: ${{ steps.calculate.outputs.total-energy-kwh }}
+      daily-co2-kg: ${{ steps.calculate.outputs.daily-co2-kg }}
+      monthly-co2-kg: ${{ steps.calculate.outputs.monthly-co2-kg }}
+      carbon-intensity: ${{ steps.calculate.outputs.carbon-intensity }}
+      efficiency-score: ${{ steps.calculate.outputs.efficiency-score }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install carbon calculation tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas python-dateutil
+      
+      - name: Calculate workflow carbon footprint
+        id: calculate
+        run: |
+          python << 'EOF'
+          import requests
+          import json
+          import os
+          from datetime import datetime, timedelta
+          import sys
+          
+          # GitHub API configuration
+          headers = {
+              'Authorization': f'token {os.environ["GITHUB_TOKEN"]}',
+              'Accept': 'application/vnd.github.v3+json'
+          }
+          
+          # Fetch workflow runs from last 24 hours and 30 days
+          now = datetime.utcnow()
+          day_ago = now - timedelta(days=1)
+          month_ago = now - timedelta(days=30)
+          
+          # Get workflow runs
+          runs_url = f'{os.environ["GITHUB_CARBON_API"]}'
+          
+          try:
+              response = requests.get(runs_url, headers=headers)
+              response.raise_for_status()
+              runs_data = response.json()
+              
+              # Carbon intensity factors (g CO2/kWh) by runner type and region
+              carbon_factors = {
+                  'ubuntu-latest': 441,  # GitHub hosted runners average
+                  'windows-latest': 489,
+                  'macos-latest': 230,
+                  'self-hosted': 350  # Estimated average
+              }
+              
+              # Power consumption estimates (kW) by runner type
+              power_consumption = {
+                  'ubuntu-latest': 0.15,  # 150W average
+                  'windows-latest': 0.18,  # 180W average
+                  'macos-latest': 0.12,   # 120W average (M1)
+                  'self-hosted': 0.20     # 200W average
+              }
+              
+              total_energy_kwh = 0
+              total_co2_kg = 0
+              daily_energy_kwh = 0
+              daily_co2_kg = 0
+              monthly_energy_kwh = 0
+              monthly_co2_kg = 0
+              
+              for run in runs_data.get('workflow_runs', []):
+                  created_at = datetime.fromisoformat(run['created_at'].replace('Z', '+00:00'))
+                  
+                  # Skip if no usage data
+                  if not run.get('run_duration_ms'):
+                      continue
+                  
+                  # Calculate duration in hours
+                  duration_hours = run['run_duration_ms'] / (1000 * 60 * 60)
+                  
+                  # Estimate runner type from job names or use default
+                  runner_type = 'ubuntu-latest'  # Default
+                  
+                  # Calculate energy consumption
+                  power_kw = power_consumption.get(runner_type, 0.15)
+                  energy_kwh = duration_hours * power_kw
+                  
+                  # Calculate CO2 emissions
+                  carbon_factor = carbon_factors.get(runner_type, 441)
+                  co2_kg = energy_kwh * carbon_factor / 1000  # Convert g to kg
+                  
+                  total_energy_kwh += energy_kwh
+                  total_co2_kg += co2_kg
+                  
+                  # Daily totals
+                  if created_at >= day_ago:
+                      daily_energy_kwh += energy_kwh
+                      daily_co2_kg += co2_kg
+                  
+                  # Monthly totals
+                  if created_at >= month_ago:
+                      monthly_energy_kwh += energy_kwh
+                      monthly_co2_kg += co2_kg
+              
+              # Calculate efficiency score (lower is better)
+              # Based on CO2 per successful workflow run
+              successful_runs = len([r for r in runs_data.get('workflow_runs', []) 
+                                   if r.get('conclusion') == 'success'])
+              
+              if successful_runs > 0:
+                  efficiency_score = total_co2_kg / successful_runs
+              else:
+                  efficiency_score = 0
+              
+              # Average carbon intensity
+              avg_carbon_intensity = total_co2_kg / total_energy_kwh * 1000 if total_energy_kwh > 0 else 0
+              
+              # Output results
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f'total-co2-kg={total_co2_kg:.3f}\n')
+                  f.write(f'total-energy-kwh={total_energy_kwh:.3f}\n')
+                  f.write(f'daily-co2-kg={daily_co2_kg:.3f}\n')
+                  f.write(f'monthly-co2-kg={monthly_co2_kg:.3f}\n')
+                  f.write(f'carbon-intensity={avg_carbon_intensity:.1f}\n')
+                  f.write(f'efficiency-score={efficiency_score:.3f}\n')
+              
+              print(f'Total Energy: {total_energy_kwh:.3f} kWh')
+              print(f'Total CO2: {total_co2_kg:.3f} kg')
+              print(f'Daily CO2: {daily_co2_kg:.3f} kg')
+              print(f'Monthly CO2: {monthly_co2_kg:.3f} kg')
+              print(f'Carbon Intensity: {avg_carbon_intensity:.1f} g CO2/kWh')
+              print(f'Efficiency Score: {efficiency_score:.3f} kg CO2/run')
+              
+          except Exception as e:
+              print(f'Error calculating carbon footprint: {e}')
+              # Set default values on error
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write('total-co2-kg=0\n')
+                  f.write('total-energy-kwh=0\n')
+                  f.write('daily-co2-kg=0\n')
+                  f.write('monthly-co2-kg=0\n')
+                  f.write('carbon-intensity=0\n')
+                  f.write('efficiency-score=0\n')
+              sys.exit(1)
+          EOF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================================================
+  # CARBON BUDGET ENFORCEMENT
+  # ============================================================================
+  
+  budget-check:
+    name: Carbon Budget Check
+    runs-on: ubuntu-latest
+    needs: [calculate-footprint]
+    if: github.event.inputs.budget_check != 'false'
+    outputs:
+      budget-status: ${{ steps.check.outputs.budget-status }}
+      daily-budget-remaining: ${{ steps.check.outputs.daily-budget-remaining }}
+      monthly-budget-remaining: ${{ steps.check.outputs.monthly-budget-remaining }}
+    
+    steps:
+      - name: Check carbon budgets
+        id: check
+        run: |
+          DAILY_CO2=${{ needs.calculate-footprint.outputs.daily-co2-kg }}
+          MONTHLY_CO2=${{ needs.calculate-footprint.outputs.monthly-co2-kg }}
+          DAILY_BUDGET=${{ env.CARBON_BUDGET_DAILY_KG }}
+          MONTHLY_BUDGET=${{ env.CARBON_BUDGET_MONTHLY_KG }}
+          
+          echo "Daily CO2: ${DAILY_CO2} kg (Budget: ${DAILY_BUDGET} kg)"
+          echo "Monthly CO2: ${MONTHLY_CO2} kg (Budget: ${MONTHLY_BUDGET} kg)"
+          
+          # Calculate remaining budgets
+          DAILY_REMAINING=$(echo "$DAILY_BUDGET - $DAILY_CO2" | bc -l)
+          MONTHLY_REMAINING=$(echo "$MONTHLY_BUDGET - $MONTHLY_CO2" | bc -l)
+          
+          echo "daily-budget-remaining=${DAILY_REMAINING}" >> $GITHUB_OUTPUT
+          echo "monthly-budget-remaining=${MONTHLY_REMAINING}" >> $GITHUB_OUTPUT
+          
+          # Check budget status
+          if (( $(echo "$DAILY_CO2 > $DAILY_BUDGET" | bc -l) )); then
+            echo "budget-status=daily-exceeded" >> $GITHUB_OUTPUT
+            echo "Daily carbon budget exceeded!"
+            exit 1
+          elif (( $(echo "$MONTHLY_CO2 > $MONTHLY_BUDGET" | bc -l) )); then
+            echo "budget-status=monthly-exceeded" >> $GITHUB_OUTPUT
+            echo "Monthly carbon budget exceeded!"
+            exit 1
+          elif (( $(echo "$DAILY_CO2 > $DAILY_BUDGET * 0.8" | bc -l) )); then
+            echo "budget-status=daily-warning" >> $GITHUB_OUTPUT
+            echo "Warning: Approaching daily carbon budget (80%+)"
+          elif (( $(echo "$MONTHLY_CO2 > $MONTHLY_BUDGET * 0.8" | bc -l) )); then
+            echo "budget-status=monthly-warning" >> $GITHUB_OUTPUT
+            echo "Warning: Approaching monthly carbon budget (80%+)"
+          else
+            echo "budget-status=ok" >> $GITHUB_OUTPUT
+            echo "Carbon budgets within limits"
+          fi
+
+  # ============================================================================
+  # SUSTAINABILITY OPTIMIZATION
+  # ============================================================================
+  
+  optimization-recommendations:
+    name: Generate Optimization Recommendations
+    runs-on: ubuntu-latest
+    needs: [calculate-footprint]
+    outputs:
+      recommendations: ${{ steps.analyze.outputs.recommendations }}
+    
+    steps:
+      - name: Analyze efficiency and generate recommendations
+        id: analyze
+        run: |
+          EFFICIENCY=${{ needs.calculate-footprint.outputs.efficiency-score }}
+          CARBON_INTENSITY=${{ needs.calculate-footprint.outputs.carbon-intensity }}
+          TOTAL_CO2=${{ needs.calculate-footprint.outputs.total-co2-kg }}
+          
+          RECOMMENDATIONS=""
+          
+          # Check efficiency score (kg CO2 per run)
+          if (( $(echo "$EFFICIENCY > 0.1" | bc -l) )); then
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Reduce workflow duration by optimizing test parallelization\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Use dependency caching to reduce setup time\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Consider splitting large workflows into smaller, targeted ones\n"
+          fi
+          
+          # Check carbon intensity
+          if (( $(echo "$CARBON_INTENSITY > 500" | bc -l) )); then
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Consider using macOS runners for lower carbon intensity\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Schedule CI/CD during low-carbon grid hours\n"
+          fi
+          
+          # Check total emissions
+          if (( $(echo "$TOTAL_CO2 > 2.0" | bc -l) )); then
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Implement smarter test selection to avoid unnecessary runs\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Use conditional workflow execution based on changed files\n"
+          fi
+          
+          # If no specific recommendations, provide general ones
+          if [ -z "$RECOMMENDATIONS" ]; then
+            RECOMMENDATIONS="- Continue current practices - carbon footprint is within optimal range\n"
+            RECOMMENDATIONS="${RECOMMENDATIONS}- Monitor trends to maintain efficiency\n"
+          fi
+          
+          echo "recommendations<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$RECOMMENDATIONS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  # ============================================================================
+  # CARBON REPORTING
+  # ============================================================================
+  
+  generate-report:
+    name: Generate Carbon Report
+    runs-on: ubuntu-latest
+    needs: [calculate-footprint, budget-check, optimization-recommendations]
+    if: always() && (github.event.inputs.force_report == 'true' || github.event_name == 'schedule')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Generate comprehensive carbon report
+        run: |
+          cat > carbon-report.md << 'EOF'
+          # CI/CD Carbon Footprint Report
+          
+          **Generated:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **Repository:** ${{ github.repository }}
+          **Period:** Last 30 days
+          
+          ## Summary
+          
+          | Metric | Value | Status |
+          |--------|-------|--------|
+          | Total CO₂ Emissions | ${{ needs.calculate-footprint.outputs.total-co2-kg }} kg | ${{ needs.budget-check.outputs.budget-status }} |
+          | Total Energy Consumption | ${{ needs.calculate-footprint.outputs.total-energy-kwh }} kWh | - |
+          | Daily CO₂ Emissions | ${{ needs.calculate-footprint.outputs.daily-co2-kg }} kg | - |
+          | Monthly CO₂ Emissions | ${{ needs.calculate-footprint.outputs.monthly-co2-kg }} kg | - |
+          | Carbon Intensity | ${{ needs.calculate-footprint.outputs.carbon-intensity }} g CO₂/kWh | - |
+          | Efficiency Score | ${{ needs.calculate-footprint.outputs.efficiency-score }} kg CO₂/run | - |
+          
+          ## Budget Status
+          
+          - **Daily Budget:** ${{ env.CARBON_BUDGET_DAILY_KG }} kg CO₂
+          - **Daily Remaining:** ${{ needs.budget-check.outputs.daily-budget-remaining }} kg CO₂
+          - **Monthly Budget:** ${{ env.CARBON_BUDGET_MONTHLY_KG }} kg CO₂
+          - **Monthly Remaining:** ${{ needs.budget-check.outputs.monthly-budget-remaining }} kg CO₂
+          
+          ## Environmental Impact
+          
+          This CI/CD carbon footprint is equivalent to:
+          - 🚗 $(echo "${{ needs.calculate-footprint.outputs.total-co2-kg }} * 4.16" | bc -l | xargs printf "%.1f") km driven by an average car
+          - 🌳 $(echo "${{ needs.calculate-footprint.outputs.total-co2-kg }} / 21.77" | bc -l | xargs printf "%.2f") trees needed to offset (annual absorption)
+          - 💡 $(echo "${{ needs.calculate-footprint.outputs.total-energy-kwh }} * 0.45" | bc -l | xargs printf "%.1f") kg CO₂ saved if using 100% renewable energy
+          
+          ## Optimization Recommendations
+          
+          ${{ needs.optimization-recommendations.outputs.recommendations }}
+          
+          ## Methodology
+          
+          This report calculates carbon emissions based on:
+          - GitHub Actions workflow run duration
+          - Estimated power consumption by runner type
+          - Regional carbon intensity factors
+          - Industry-standard conversion factors
+          
+          **Note:** Estimates are based on publicly available data and may not reflect exact emissions.
+          
+          ---
+          *Generated by HF Eco2AI Plugin Carbon Tracking Workflow*
+          EOF
+      
+      - name: Upload carbon report
+        uses: actions/upload-artifact@v4
+        with:
+          name: carbon-report-${{ github.run_number }}
+          path: carbon-report.md
+          retention-days: 365
+      
+      - name: Create or update carbon tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('carbon-report.md', 'utf8');
+            
+            // Look for existing carbon tracking issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['carbon-tracking', 'sustainability'],
+              state: 'open'
+            });
+            
+            const title = '🌱 CI/CD Carbon Footprint Tracking';
+            
+            if (issues.data.length > 0) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: report
+              });
+              console.log(`Updated carbon tracking issue #${issues.data[0].number}`);
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: report,
+                labels: ['carbon-tracking', 'sustainability', 'enhancement']
+              });
+              console.log('Created new carbon tracking issue');
+            }
+
+  # ============================================================================
+  # NOTIFICATIONS
+  # ============================================================================
+  
+  notify-budget-exceeded:
+    name: Notify Budget Exceeded
+    runs-on: ubuntu-latest
+    needs: [budget-check]
+    if: failure() && contains(needs.budget-check.outputs.budget-status, 'exceeded')
+    
+    steps:
+      - name: Send Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: |
+            🚨 **Carbon Budget Exceeded!**
+            
+            Repository: ${{ github.repository }}
+            Status: ${{ needs.budget-check.outputs.budget-status }}
+            
+            Daily CO₂: ${{ needs.calculate-footprint.outputs.daily-co2-kg }} kg
+            Monthly CO₂: ${{ needs.calculate-footprint.outputs.monthly-co2-kg }} kg
+            
+            Immediate action required to reduce CI/CD carbon footprint.
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_SUSTAINABILITY }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_SUSTAINABILITY }}
+      
+      - name: Create urgent issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 URGENT: Carbon Budget Exceeded',
+              body: `## Carbon Budget Exceeded\n\nOur CI/CD operations have exceeded the carbon budget:\n\n- **Status:** ${{ needs.budget-check.outputs.budget-status }}\n- **Daily CO₂:** ${{ needs.calculate-footprint.outputs.daily-co2-kg }} kg\n- **Monthly CO₂:** ${{ needs.calculate-footprint.outputs.monthly-co2-kg }} kg\n\n### Immediate Actions Required:\n\n1. Review recent workflow runs for inefficiencies\n2. Implement workflow optimizations\n3. Consider temporarily reducing CI/CD frequency\n4. Update carbon budgets if justified\n\n### Recommendations:\n\n${{ needs.optimization-recommendations.outputs.recommendations }}`,
+              labels: ['urgent', 'carbon-tracking', 'sustainability'],
+              assignees: ['sustainability-team']
+            });
+
+  notify-warning:
+    name: Notify Budget Warning
+    runs-on: ubuntu-latest
+    needs: [budget-check]
+    if: contains(needs.budget-check.outputs.budget-status, 'warning')
+    
+    steps:
+      - name: Send Slack warning
+        uses: 8398a7/action-slack@v3
+        with:
+          status: warning
+          text: |
+            ⚠️ **Carbon Budget Warning**
+            
+            Repository: ${{ github.repository }}
+            Status: ${{ needs.budget-check.outputs.budget-status }}
+            
+            Daily CO₂: ${{ needs.calculate-footprint.outputs.daily-co2-kg }} kg
+            Monthly CO₂: ${{ needs.calculate-footprint.outputs.monthly-co2-kg }} kg
+            
+            Approaching carbon budget limits. Consider optimization.
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_SUSTAINABILITY }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_SUSTAINABILITY }}
