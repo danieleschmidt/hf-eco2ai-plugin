@@ -1,0 +1,187 @@
+# Alertmanager configuration for HF Eco2AI Plugin
+
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@hf-eco2ai.terragonlabs.com'
+  resolve_timeout: 5m
+
+# Route configuration
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'default'
+  routes:
+    # Critical carbon emissions alerts
+    - match:
+        severity: critical
+        category: carbon
+      receiver: 'carbon-critical'
+      group_wait: 5s
+      repeat_interval: 15m
+    
+    # High energy consumption alerts
+    - match:
+        severity: warning
+        category: energy
+      receiver: 'energy-warning'
+      group_wait: 30s
+      repeat_interval: 2h
+    
+    # System performance alerts
+    - match:
+        category: performance
+      receiver: 'performance-alerts'
+      group_wait: 1m
+      repeat_interval: 4h
+    
+    # GPU-related alerts
+    - match:
+        component: gpu
+      receiver: 'gpu-alerts'
+      group_wait: 15s
+      repeat_interval: 30m
+
+# Receiver configurations
+receivers:
+  # Default receiver
+  - name: 'default'
+    email_configs:
+      - to: 'team@terragonlabs.com'
+        subject: 'HF Eco2AI Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Time: {{ .StartsAt }}
+          {{ end }}
+  
+  # Critical carbon emissions
+  - name: 'carbon-critical'
+    email_configs:
+      - to: 'sustainability@terragonlabs.com,management@terragonlabs.com'
+        subject: '⚠ CRITICAL: High Carbon Emissions Detected'
+        body: |
+          CRITICAL CARBON ALERT
+          =====================
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Current CO2: {{ .Labels.co2_kg }}kg
+          Threshold: {{ .Labels.threshold }}kg
+          Project: {{ .Labels.project_name }}
+          Time: {{ .StartsAt }}
+          
+          Immediate action required to reduce carbon footprint.
+          {{ end }}
+    
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#sustainability-alerts'
+        title: '⚠ Critical Carbon Emissions Alert'
+        text: |
+          {{ range .Alerts }}
+          *Project:* {{ .Labels.project_name }}
+          *CO2 Emissions:* {{ .Labels.co2_kg }}kg
+          *Description:* {{ .Annotations.description }}
+          {{ end }}
+        color: 'danger'
+  
+  # Energy consumption warnings
+  - name: 'energy-warning'
+    email_configs:
+      - to: 'devops@terragonlabs.com'
+        subject: 'Energy Consumption Warning: {{ .GroupLabels.alertname }}'
+        body: |
+          ENERGY CONSUMPTION WARNING
+          ==========================
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Current Energy: {{ .Labels.energy_kwh }}kWh
+          Rate: {{ .Labels.energy_rate }}kWh/hour
+          Project: {{ .Labels.project_name }}
+          Time: {{ .StartsAt }}
+          {{ end }}
+    
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#ml-operations'
+        title: '⚡ Energy Consumption Warning'
+        text: |
+          {{ range .Alerts }}
+          *Project:* {{ .Labels.project_name }}
+          *Energy Usage:* {{ .Labels.energy_kwh }}kWh
+          *Rate:* {{ .Labels.energy_rate }}kWh/hour
+          {{ end }}
+        color: 'warning'
+  
+  # Performance alerts
+  - name: 'performance-alerts'
+    email_configs:
+      - to: 'performance@terragonlabs.com'
+        subject: 'Performance Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          PERFORMANCE ALERT
+          =================
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Component: {{ .Labels.component }}
+          Metric: {{ .Labels.metric_name }}
+          Value: {{ .Labels.metric_value }}
+          Time: {{ .StartsAt }}
+          {{ end }}
+  
+  # GPU-specific alerts
+  - name: 'gpu-alerts'
+    email_configs:
+      - to: 'gpu-ops@terragonlabs.com'
+        subject: 'GPU Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          GPU ALERT
+          =========
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          GPU ID: {{ .Labels.gpu_id }}
+          GPU Model: {{ .Labels.gpu_model }}
+          Temperature: {{ .Labels.gpu_temperature }}°C
+          Power: {{ .Labels.gpu_power }}W
+          Memory Usage: {{ .Labels.gpu_memory_usage }}%
+          Time: {{ .StartsAt }}
+          {{ end }}
+    
+    pagerduty_configs:
+      - routing_key: '${PAGERDUTY_ROUTING_KEY}'
+        description: 'GPU Alert: {{ .GroupLabels.alertname }}'
+        severity: '{{ .CommonLabels.severity }}'
+        details:
+          firing: '{{ template "pagerduty.default.instances" . }}'
+          resolved: '{{ template "pagerduty.default.instances" . }}'
+
+# Inhibit rules to prevent alert spam
+inhibit_rules:
+  # Inhibit warning alerts when critical alerts are firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'project_name']
+  
+  # Inhibit individual GPU alerts when system-wide alerts are firing
+  - source_match:
+      alertname: 'SystemOverload'
+    target_match_re:
+      alertname: 'GPU.*'
+    equal: ['instance']
+
+# Templates for custom formatting
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'

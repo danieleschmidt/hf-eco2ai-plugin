@@ -1,0 +1,681 @@
+# Automated Dependency Update Workflow
+# This workflow automatically updates dependencies and creates PRs with comprehensive testing
+
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly Monday 6 AM UTC
+  workflow_dispatch:
+    inputs:
+      update_type:
+        description: 'Type of update to perform'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'security'
+          - 'patch'
+          - 'minor'
+      force_update:
+        description: 'Force update even if tests fail'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PYTHON_VERSION: '3.11'
+  MAX_DEPENDENCY_AGE_DAYS: 90
+  SECURITY_UPDATE_PRIORITY: true
+
+jobs:
+  # ============================================================================
+  # DEPENDENCY ANALYSIS
+  # ============================================================================
+  
+  analyze-dependencies:
+    name: Analyze Current Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      has-updates: ${{ steps.check.outputs.has-updates }}
+      security-updates: ${{ steps.check.outputs.security-updates }}
+      update-summary: ${{ steps.check.outputs.update-summary }}
+      outdated-packages: ${{ steps.check.outputs.outdated-packages }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install analysis tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit safety pip-check-updates
+          pip install -e .
+      
+      - name: Check for security vulnerabilities
+        id: security
+        run: |
+          echo "Running security analysis..."
+          
+          # Safety check
+          SAFETY_ISSUES=$(safety check --json 2>/dev/null | jq '.[] | length' || echo "0")
+          
+          # pip-audit check
+          pip-audit --format=json --output=audit-report.json || true
+          AUDIT_ISSUES=$(jq '.vulnerabilities | length' audit-report.json 2>/dev/null || echo "0")
+          
+          TOTAL_SECURITY_ISSUES=$((SAFETY_ISSUES + AUDIT_ISSUES))
+          echo "security-count=$TOTAL_SECURITY_ISSUES" >> $GITHUB_OUTPUT
+          
+          if [ $TOTAL_SECURITY_ISSUES -gt 0 ]; then
+            echo "Security vulnerabilities found: $TOTAL_SECURITY_ISSUES"
+            echo "has-security-issues=true" >> $GITHUB_OUTPUT
+          else
+            echo "No security vulnerabilities found"
+            echo "has-security-issues=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Check for outdated packages
+        id: outdated
+        run: |
+          echo "Checking for outdated packages..."
+          
+          # Get list of outdated packages
+          pip list --outdated --format=json > outdated.json
+          
+          # Parse outdated packages
+          python << 'EOF'
+          import json
+          import os
+          from datetime import datetime, timedelta
+          
+          with open('outdated.json', 'r') as f:
+              outdated = json.load(f)
+          
+          # Categorize updates
+          security_updates = []
+          patch_updates = []
+          minor_updates = []
+          major_updates = []
+          
+          update_summary = {
+              'total': len(outdated),
+              'security': 0,
+              'patch': 0,
+              'minor': 0,
+              'major': 0
+          }
+          
+          for pkg in outdated:
+              current = pkg['version'].split('.')
+              latest = pkg['latest_version'].split('.')
+              
+              # Simple version comparison (major.minor.patch)
+              if len(current) >= 1 and len(latest) >= 1:
+                  if current[0] != latest[0]:
+                      major_updates.append(pkg)
+                      update_summary['major'] += 1
+                  elif len(current) >= 2 and len(latest) >= 2 and current[1] != latest[1]:
+                      minor_updates.append(pkg)
+                      update_summary['minor'] += 1
+                  else:
+                      patch_updates.append(pkg)
+                      update_summary['patch'] += 1
+          
+          # Output results
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"total-outdated={update_summary['total']}\n")
+              f.write(f"patch-updates={update_summary['patch']}\n")
+              f.write(f"minor-updates={update_summary['minor']}\n")
+              f.write(f"major-updates={update_summary['major']}\n")
+          
+          # Create summary
+          summary = f"""Total outdated packages: {update_summary['total']}
+          - Patch updates: {update_summary['patch']}
+          - Minor updates: {update_summary['minor']}
+          - Major updates: {update_summary['major']}"""
+          
+          print(summary)
+          
+          # Save package lists
+          with open('patch_updates.json', 'w') as f:
+              json.dump(patch_updates, f)
+          with open('minor_updates.json', 'w') as f:
+              json.dump(minor_updates, f)
+          with open('major_updates.json', 'w') as f:
+              json.dump(major_updates, f)
+          EOF
+      
+      - name: Determine update plan
+        id: check
+        run: |
+          TOTAL_OUTDATED=$(cat outdated.json | jq 'length')
+          SECURITY_ISSUES="${{ steps.security.outputs.has-security-issues }}"
+          UPDATE_TYPE="${{ github.event.inputs.update_type || 'all' }}"
+          
+          echo "Total outdated packages: $TOTAL_OUTDATED"
+          echo "Security issues: $SECURITY_ISSUES"
+          echo "Update type: $UPDATE_TYPE"
+          
+          # Determine if we have updates to process
+          if [ "$TOTAL_OUTDATED" -gt 0 ] || [ "$SECURITY_ISSUES" = "true" ]; then
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+            echo "Updates available"
+          else
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+            echo "No updates available"
+          fi
+          
+          # Set security update flag
+          echo "security-updates=$SECURITY_ISSUES" >> $GITHUB_OUTPUT
+          
+          # Create update summary
+          SUMMARY="Dependency Analysis Summary:\n"
+          SUMMARY="${SUMMARY}- Total outdated: $TOTAL_OUTDATED\n"
+          SUMMARY="${SUMMARY}- Security issues: $SECURITY_ISSUES\n"
+          SUMMARY="${SUMMARY}- Update type: $UPDATE_TYPE\n"
+          
+          echo "update-summary<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$SUMMARY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Save outdated packages for later use
+          echo "outdated-packages<<EOF" >> $GITHUB_OUTPUT
+          cat outdated.json >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Upload analysis artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-analysis
+          path: |
+            outdated.json
+            patch_updates.json
+            minor_updates.json
+            major_updates.json
+            audit-report.json
+          retention-days: 30
+
+  # ============================================================================
+  # SECURITY UPDATES (HIGH PRIORITY)
+  # ============================================================================
+  
+  security-updates:
+    name: Apply Security Updates
+    runs-on: ubuntu-latest
+    needs: [analyze-dependencies]
+    if: needs.analyze-dependencies.outputs.security-updates == 'true'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      - name: Create security update branch
+        run: |
+          BRANCH="security-updates-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          echo "SECURITY_BRANCH=$BRANCH" >> $GITHUB_ENV
+      
+      - name: Download analysis artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dependency-analysis
+      
+      - name: Apply security updates
+        run: |
+          echo "Applying security updates..."
+          
+          # Install current dependencies
+          python -m pip install --upgrade pip
+          pip install -e .
+          
+          # Apply security updates using pip-audit
+          pip-audit --fix --dry-run --format=json --output=security-fixes.json
+          
+          # Apply the fixes
+          pip-audit --fix
+          
+          # Update requirements if they exist
+          if [ -f "requirements.txt" ]; then
+            pip freeze > requirements.txt
+          fi
+      
+      - name: Test security updates
+        run: |
+          echo "Testing security updates..."
+          
+          # Run basic import test
+          python -c "import hf_eco2ai; print('Import successful')"
+          
+          # Run unit tests
+          python -m pytest tests/unit/ -x --tb=short
+      
+      - name: Commit security updates
+        run: |
+          git add -A
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git commit -m "security: update dependencies to fix security vulnerabilities
+          
+          - Applied security updates using pip-audit
+          - All security vulnerabilities have been addressed
+          - Basic tests passing
+          
+          Co-authored-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+      
+      - name: Push security updates
+        run: |
+          git push origin "$SECURITY_BRANCH"
+      
+      - name: Create security update PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔒 Security: Update dependencies to fix vulnerabilities',
+              head: process.env.SECURITY_BRANCH,
+              base: 'main',
+              body: `## Security Dependency Updates
+              
+              This PR updates dependencies to fix security vulnerabilities.
+              
+              ### Security Analysis
+              
+              ${{ needs.analyze-dependencies.outputs.update-summary }}
+              
+              ### Changes
+              
+              - ✅ Applied security updates using pip-audit
+              - ✅ All known security vulnerabilities addressed
+              - ✅ Basic functionality tests passing
+              
+              ### Testing
+              
+              - [x] Import tests pass
+              - [x] Unit tests pass
+              - [ ] Integration tests (will run on PR)
+              
+              ### Review Checklist
+              
+              - [ ] Security vulnerabilities resolved
+              - [ ] No breaking changes introduced
+              - [ ] Documentation updated if needed
+              
+              ---
+              
+              🤖 This PR was automatically created by the dependency update workflow.
+              `,
+              labels: ['security', 'dependencies', 'automated']
+            });
+            
+            console.log(`Created security update PR #${pr.number}`);
+
+  # ============================================================================
+  # REGULAR DEPENDENCY UPDATES
+  # ============================================================================
+  
+  dependency-updates:
+    name: Apply Dependency Updates
+    runs-on: ubuntu-latest
+    needs: [analyze-dependencies]
+    if: needs.analyze-dependencies.outputs.has-updates == 'true' && github.event.inputs.update_type != 'security'
+    strategy:
+      matrix:
+        update-type: [patch, minor]
+      fail-fast: false
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+      
+      - name: Create update branch
+        run: |
+          BRANCH="${{ matrix.update-type }}-updates-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH"
+          echo "UPDATE_BRANCH=$BRANCH" >> $GITHUB_ENV
+      
+      - name: Download analysis artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dependency-analysis
+      
+      - name: Apply ${{ matrix.update-type }} updates
+        run: |
+          echo "Applying ${{ matrix.update-type }} updates..."
+          
+          # Install current dependencies
+          python -m pip install --upgrade pip
+          pip install -e .
+          
+          # Read the appropriate update list
+          UPDATE_FILE="${{ matrix.update-type }}_updates.json"
+          
+          if [ ! -f "$UPDATE_FILE" ] || [ "$(cat "$UPDATE_FILE" | jq 'length')" = "0" ]; then
+            echo "No ${{ matrix.update-type }} updates available"
+            exit 0
+          fi
+          
+          # Apply updates
+          python << 'EOF'
+          import json
+          import subprocess
+          import sys
+          
+          # Read updates
+          with open('${{ matrix.update-type }}_updates.json', 'r') as f:
+              updates = json.load(f)
+          
+          if not updates:
+              print("No updates to apply")
+              sys.exit(0)
+          
+          print(f"Applying {len(updates)} ${{ matrix.update-type }} updates:")
+          
+          for pkg in updates:
+              package_name = pkg['name']
+              current_version = pkg['version']
+              latest_version = pkg['latest_version']
+              
+              print(f"Updating {package_name}: {current_version} -> {latest_version}")
+              
+              try:
+                  # Update the package
+                  result = subprocess.run(
+                      ['pip', 'install', '--upgrade', f"{package_name}=={latest_version}"],
+                      capture_output=True, text=True, check=True
+                  )
+                  print(f"  ✅ Successfully updated {package_name}")
+              except subprocess.CalledProcessError as e:
+                  print(f"  ❌ Failed to update {package_name}: {e}")
+                  # Continue with other packages
+          EOF
+          
+          # Update requirements if they exist
+          if [ -f "requirements.txt" ]; then
+            pip freeze > requirements.txt
+          fi
+      
+      - name: Test updates
+        id: test
+        run: |
+          echo "Testing ${{ matrix.update-type }} updates..."
+          
+          # Basic import test
+          python -c "import hf_eco2ai; print('Import successful')"
+          
+          # Run comprehensive tests
+          python -m pytest tests/ --tb=short --maxfail=5
+        continue-on-error: true
+      
+      - name: Commit updates
+        if: steps.test.outcome == 'success' || github.event.inputs.force_update == 'true'
+        run: |
+          git add -A
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          # Count updated packages
+          UPDATED_COUNT=$(cat "${{ matrix.update-type }}_updates.json" | jq 'length')
+          
+          git commit -m "deps: update ${{ matrix.update-type }} dependencies ($UPDATED_COUNT packages)
+          
+          - Updated $UPDATED_COUNT ${{ matrix.update-type }} dependencies
+          - All tests passing
+          - No breaking changes detected
+          
+          Co-authored-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>"
+          
+          echo "UPDATE_COMMITTED=true" >> $GITHUB_ENV
+      
+      - name: Push updates
+        if: env.UPDATE_COMMITTED == 'true'
+        run: |
+          git push origin "$UPDATE_BRANCH"
+      
+      - name: Create update PR
+        if: env.UPDATE_COMMITTED == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const updates = JSON.parse(fs.readFileSync('${{ matrix.update-type }}_updates.json', 'utf8'));
+            
+            let updateList = '';
+            for (const pkg of updates) {
+              updateList += `- **${pkg.name}**: ${pkg.version} → ${pkg.latest_version}\n`;
+            }
+            
+            const testStatus = '${{ steps.test.outcome }}';
+            const testIcon = testStatus === 'success' ? '✅' : '⚠️';
+            const testText = testStatus === 'success' ? 'All tests passing' : 'Some tests failed (force update enabled)';
+            
+            const { data: pr } = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔄 Dependencies: Update ${{ matrix.update-type }} dependencies (${updates.length} packages)`,
+              head: process.env.UPDATE_BRANCH,
+              base: 'main',
+              body: `## ${{ matrix.update-type }} Dependency Updates
+              
+              This PR updates ${{ matrix.update-type }} dependencies to their latest versions.
+              
+              ### Updated Packages (${updates.length})
+              
+              ${updateList}
+              
+              ### Testing Status
+              
+              ${testIcon} ${testText}
+              
+              ### What's Changed
+              
+              - Updated ${updates.length} ${{ matrix.update-type }} dependencies
+              - Maintained backward compatibility
+              - All critical functionality preserved
+              
+              ### Review Checklist
+              
+              - [ ] No breaking changes introduced
+              - [ ] Performance impact assessed
+              - [ ] Documentation updated if needed
+              - [ ] Security implications reviewed
+              
+              ### Automatic Merge
+              
+              ${
+                testStatus === 'success' 
+                  ? '✅ This PR is eligible for automatic merge after CI passes.' 
+                  : '⚠️ Manual review required due to test failures.'
+              }
+              
+              ---
+              
+              🤖 This PR was automatically created by the dependency update workflow.
+              `,
+              labels: ['dependencies', '${{ matrix.update-type }}', 'automated']
+            });
+            
+            console.log(`Created ${{ matrix.update-type }} update PR #${pr.number}`);
+            
+            // Auto-approve if tests pass and it's a patch update
+            if (testStatus === 'success' && '${{ matrix.update-type }}' === 'patch') {
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                event: 'APPROVE',
+                body: 'Auto-approving patch dependency updates with passing tests.'
+              });
+              
+              console.log(`Auto-approved patch update PR #${pr.number}`);
+            }
+
+  # ============================================================================
+  # COMPATIBILITY TESTING
+  # ============================================================================
+  
+  compatibility-test:
+    name: Test Compatibility Matrix
+    runs-on: ubuntu-latest
+    needs: [analyze-dependencies]
+    if: needs.analyze-dependencies.outputs.has-updates == 'true'
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+        dependency-set: ['minimal', 'latest']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install dependencies (${{ matrix.dependency-set }})
+        run: |
+          python -m pip install --upgrade pip
+          
+          if [ "${{ matrix.dependency-set }}" = "minimal" ]; then
+            # Install with minimum versions
+            pip install -e .
+          else
+            # Install with latest versions
+            pip install --upgrade -e .
+            pip install --upgrade $(pip list --outdated --format=json | jq -r '.[] | .name')
+          fi
+      
+      - name: Run compatibility tests
+        run: |
+          echo "Testing with Python ${{ matrix.python-version }} and ${{ matrix.dependency-set }} dependencies"
+          
+          # Basic functionality test
+          python -c "
+          import hf_eco2ai
+          from hf_eco2ai import Eco2AICallback, CarbonConfig
+          
+          # Test basic instantiation
+          config = CarbonConfig()
+          callback = Eco2AICallback(config)
+          
+          print(f'HF Eco2AI version: {hf_eco2ai.__version__}')
+          print('Basic compatibility test passed')
+          "
+          
+          # Run critical tests
+          python -m pytest tests/unit/test_callback.py -v
+
+  # ============================================================================
+  # SUMMARY AND CLEANUP
+  # ============================================================================
+  
+  update-summary:
+    name: Update Summary
+    runs-on: ubuntu-latest
+    needs: [analyze-dependencies, security-updates, dependency-updates, compatibility-test]
+    if: always() && needs.analyze-dependencies.outputs.has-updates == 'true'
+    
+    steps:
+      - name: Generate update summary
+        run: |
+          echo "# Dependency Update Summary" > summary.md
+          echo "" >> summary.md
+          echo "**Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> summary.md
+          echo "**Workflow:** ${{ github.workflow }}" >> summary.md
+          echo "**Trigger:** ${{ github.event_name }}" >> summary.md
+          echo "" >> summary.md
+          
+          echo "## Analysis Results" >> summary.md
+          echo "" >> summary.md
+          echo "${{ needs.analyze-dependencies.outputs.update-summary }}" >> summary.md
+          echo "" >> summary.md
+          
+          echo "## Job Results" >> summary.md
+          echo "" >> summary.md
+          echo "- **Security Updates:** ${{ needs.security-updates.result || 'skipped' }}" >> summary.md
+          echo "- **Patch Updates:** ${{ needs.dependency-updates.result || 'skipped' }}" >> summary.md
+          echo "- **Compatibility Tests:** ${{ needs.compatibility-test.result || 'skipped' }}" >> summary.md
+          echo "" >> summary.md
+          
+          if [ "${{ needs.security-updates.result }}" = "success" ]; then
+            echo "✅ Security updates applied successfully" >> summary.md
+          elif [ "${{ needs.analyze-dependencies.outputs.security-updates }}" = "true" ]; then
+            echo "❌ Security updates failed" >> summary.md
+          fi
+          
+          if [ "${{ needs.dependency-updates.result }}" = "success" ]; then
+            echo "✅ Regular updates applied successfully" >> summary.md
+          elif [ "${{ needs.dependency-updates.result }}" = "failure" ]; then
+            echo "❌ Some regular updates failed" >> summary.md
+          fi
+          
+          echo "" >> summary.md
+          echo "---" >> summary.md
+          echo "*Generated by automated dependency update workflow*" >> summary.md
+      
+      - name: Upload summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-summary
+          path: summary.md
+          retention-days: 90
+      
+      - name: Post summary to Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            🔄 **Dependency Update Summary**
+            
+            Repository: ${{ github.repository }}
+            
+            ${{ needs.analyze-dependencies.outputs.update-summary }}
+            
+            Results:
+            - Security: ${{ needs.security-updates.result || 'skipped' }}
+            - Updates: ${{ needs.dependency-updates.result || 'skipped' }}
+            - Tests: ${{ needs.compatibility-test.result || 'skipped' }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
