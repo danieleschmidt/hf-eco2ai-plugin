@@ -1,0 +1,467 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HF Eco2AI Plugin Project Metrics",
+  "description": "Comprehensive project health and sustainability metrics for the HF Eco2AI Plugin",
+  "version": "1.0.0",
+  "lastUpdated": "2025-08-02T00:00:00Z",
+  "repository": {
+    "name": "hf-eco2ai-plugin",
+    "owner": "terragonlabs",
+    "url": "https://github.com/terragonlabs/hf-eco2ai-plugin",
+    "branch": "main"
+  },
+  "metrics": {
+    "code_quality": {
+      "description": "Code quality and maintainability metrics",
+      "targets": {
+        "test_coverage": {
+          "value": 90,
+          "unit": "percent",
+          "description": "Minimum test coverage threshold"
+        },
+        "code_complexity": {
+          "value": 10,
+          "unit": "cyclomatic_complexity",
+          "description": "Maximum cyclomatic complexity per function"
+        },
+        "technical_debt_ratio": {
+          "value": 5,
+          "unit": "percent",
+          "description": "Maximum technical debt ratio"
+        },
+        "duplication_ratio": {
+          "value": 3,
+          "unit": "percent",
+          "description": "Maximum code duplication ratio"
+        }
+      },
+      "current": {
+        "test_coverage": {
+          "value": 85,
+          "unit": "percent",
+          "trend": "increasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "code_complexity": {
+          "value": 8.2,
+          "unit": "cyclomatic_complexity",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "technical_debt_ratio": {
+          "value": 3.1,
+          "unit": "percent",
+          "trend": "decreasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "duplication_ratio": {
+          "value": 1.8,
+          "unit": "percent",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        }
+      }
+    },
+    "security": {
+      "description": "Security and vulnerability metrics",
+      "targets": {
+        "critical_vulnerabilities": {
+          "value": 0,
+          "unit": "count",
+          "description": "Maximum critical vulnerabilities allowed"
+        },
+        "high_vulnerabilities": {
+          "value": 0,
+          "unit": "count",
+          "description": "Maximum high-severity vulnerabilities allowed"
+        },
+        "security_scan_frequency": {
+          "value": 24,
+          "unit": "hours",
+          "description": "Maximum time between security scans"
+        },
+        "dependency_freshness": {
+          "value": 30,
+          "unit": "days",
+          "description": "Maximum age of dependencies"
+        }
+      },
+      "current": {
+        "critical_vulnerabilities": {
+          "value": 0,
+          "unit": "count",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "high_vulnerabilities": {
+          "value": 0,
+          "unit": "count",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "moderate_vulnerabilities": {
+          "value": 2,
+          "unit": "count",
+          "trend": "decreasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "last_security_scan": {
+          "value": "2025-08-02T00:00:00Z",
+          "unit": "timestamp",
+          "description": "Last comprehensive security scan"
+        }
+      }
+    },
+    "performance": {
+      "description": "Performance and efficiency metrics",
+      "targets": {
+        "callback_overhead": {
+          "value": 2,
+          "unit": "percent",
+          "description": "Maximum training overhead from carbon tracking"
+        },
+        "memory_usage": {
+          "value": 100,
+          "unit": "megabytes",
+          "description": "Maximum memory usage by plugin"
+        },
+        "measurement_latency": {
+          "value": 50,
+          "unit": "milliseconds",
+          "description": "Maximum latency for carbon measurements"
+        },
+        "api_response_time": {
+          "value": 200,
+          "unit": "milliseconds",
+          "description": "Maximum API response time"
+        }
+      },
+      "current": {
+        "callback_overhead": {
+          "value": 1.2,
+          "unit": "percent",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "memory_usage": {
+          "value": 45,
+          "unit": "megabytes",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "measurement_latency": {
+          "value": 25,
+          "unit": "milliseconds",
+          "trend": "improving",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "api_response_time": {
+          "value": 120,
+          "unit": "milliseconds",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        }
+      }
+    },
+    "sustainability": {
+      "description": "Carbon footprint and sustainability metrics",
+      "targets": {
+        "carbon_efficiency_score": {
+          "value": 0.8,
+          "unit": "score",
+          "description": "Minimum carbon efficiency score (0-1)"
+        },
+        "monthly_carbon_budget": {
+          "value": 100,
+          "unit": "kg_co2",
+          "description": "Monthly carbon budget for all operations"
+        },
+        "renewable_energy_ratio": {
+          "value": 70,
+          "unit": "percent",
+          "description": "Target renewable energy usage ratio"
+        },
+        "carbon_intensity_threshold": {
+          "value": 400,
+          "unit": "g_co2_per_kwh",
+          "description": "Maximum acceptable carbon intensity"
+        }
+      },
+      "current": {
+        "carbon_efficiency_score": {
+          "value": 0.85,
+          "unit": "score",
+          "trend": "improving",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "monthly_carbon_usage": {
+          "value": 45.2,
+          "unit": "kg_co2",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "current_carbon_intensity": {
+          "value": 380,
+          "unit": "g_co2_per_kwh",
+          "trend": "variable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "total_energy_tracked": {
+          "value": 1250,
+          "unit": "kwh",
+          "trend": "increasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        }
+      }
+    },
+    "adoption": {
+      "description": "Usage and adoption metrics",
+      "targets": {
+        "monthly_active_users": {
+          "value": 1000,
+          "unit": "count",
+          "description": "Target monthly active users"
+        },
+        "github_stars": {
+          "value": 500,
+          "unit": "count",
+          "description": "Target GitHub stars"
+        },
+        "pypi_downloads_monthly": {
+          "value": 5000,
+          "unit": "count",
+          "description": "Target monthly PyPI downloads"
+        },
+        "documentation_coverage": {
+          "value": 95,
+          "unit": "percent",
+          "description": "Target documentation coverage"
+        }
+      },
+      "current": {
+        "github_stars": {
+          "value": 127,
+          "unit": "count",
+          "trend": "increasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "github_forks": {
+          "value": 23,
+          "unit": "count",
+          "trend": "increasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "pypi_downloads_monthly": {
+          "value": 2340,
+          "unit": "count",
+          "trend": "increasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "documentation_coverage": {
+          "value": 88,
+          "unit": "percent",
+          "trend": "increasing",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        }
+      }
+    },
+    "development": {
+      "description": "Development velocity and health metrics",
+      "targets": {
+        "build_success_rate": {
+          "value": 95,
+          "unit": "percent",
+          "description": "Minimum CI/CD build success rate"
+        },
+        "average_build_time": {
+          "value": 15,
+          "unit": "minutes",
+          "description": "Maximum average build time"
+        },
+        "deployment_frequency": {
+          "value": 2,
+          "unit": "per_week",
+          "description": "Target deployment frequency"
+        },
+        "mean_time_to_recovery": {
+          "value": 2,
+          "unit": "hours",
+          "description": "Maximum time to recover from failures"
+        }
+      },
+      "current": {
+        "build_success_rate": {
+          "value": 97.3,
+          "unit": "percent",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "average_build_time": {
+          "value": 12.5,
+          "unit": "minutes",
+          "trend": "improving",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "deployment_frequency": {
+          "value": 1.8,
+          "unit": "per_week",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "open_issues": {
+          "value": 8,
+          "unit": "count",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        },
+        "open_pull_requests": {
+          "value": 3,
+          "unit": "count",
+          "trend": "stable",
+          "last_measurement": "2025-08-02T00:00:00Z"
+        }
+      }
+    }
+  },
+  "alerts": {
+    "description": "Alert configurations for metric thresholds",
+    "configurations": [
+      {
+        "name": "test_coverage_low",
+        "condition": "test_coverage < 85",
+        "severity": "warning",
+        "notification_channels": ["slack", "email"]
+      },
+      {
+        "name": "security_vulnerabilities",
+        "condition": "critical_vulnerabilities > 0 OR high_vulnerabilities > 0",
+        "severity": "critical",
+        "notification_channels": ["slack", "email", "pagerduty"]
+      },
+      {
+        "name": "carbon_budget_exceeded",
+        "condition": "monthly_carbon_usage > monthly_carbon_budget",
+        "severity": "warning",
+        "notification_channels": ["slack", "sustainability_team"]
+      },
+      {
+        "name": "build_failure_rate_high",
+        "condition": "build_success_rate < 90",
+        "severity": "warning",
+        "notification_channels": ["slack", "engineering_team"]
+      },
+      {
+        "name": "performance_degradation",
+        "condition": "callback_overhead > 3 OR memory_usage > 150",
+        "severity": "warning",
+        "notification_channels": ["slack", "performance_team"]
+      }
+    ]
+  },
+  "reporting": {
+    "description": "Reporting configuration and schedules",
+    "schedules": {
+      "daily": {
+        "metrics": ["security", "performance", "development"],
+        "recipients": ["engineering_team"],
+        "format": "summary"
+      },
+      "weekly": {
+        "metrics": ["code_quality", "sustainability", "adoption"],
+        "recipients": ["engineering_team", "management"],
+        "format": "detailed"
+      },
+      "monthly": {
+        "metrics": ["all"],
+        "recipients": ["all_stakeholders"],
+        "format": "executive_summary"
+      }
+    },
+    "dashboards": {
+      "engineering": {
+        "url": "https://grafana.terragonlabs.com/d/hf-eco2ai-engineering",
+        "metrics": ["code_quality", "security", "performance", "development"]
+      },
+      "sustainability": {
+        "url": "https://grafana.terragonlabs.com/d/hf-eco2ai-sustainability",
+        "metrics": ["sustainability"]
+      },
+      "business": {
+        "url": "https://grafana.terragonlabs.com/d/hf-eco2ai-business",
+        "metrics": ["adoption"]
+      }
+    }
+  },
+  "automation": {
+    "description": "Automated actions based on metrics",
+    "rules": [
+      {
+        "name": "auto_dependency_update",
+        "trigger": "dependency_age > 30 AND security_vulnerabilities == 0",
+        "action": "create_dependency_update_pr",
+        "frequency": "weekly"
+      },
+      {
+        "name": "auto_performance_optimization",
+        "trigger": "callback_overhead > 2.5",
+        "action": "create_performance_issue",
+        "frequency": "immediate"
+      },
+      {
+        "name": "auto_security_scan",
+        "trigger": "last_security_scan > 24h",
+        "action": "trigger_security_workflow",
+        "frequency": "daily"
+      },
+      {
+        "name": "auto_carbon_report",
+        "trigger": "monthly_carbon_usage > 80% of budget",
+        "action": "generate_carbon_optimization_report",
+        "frequency": "weekly"
+      }
+    ]
+  },
+  "integrations": {
+    "description": "External integrations for metrics collection",
+    "services": {
+      "github": {
+        "api_endpoints": [
+          "https://api.github.com/repos/terragonlabs/hf-eco2ai-plugin",
+          "https://api.github.com/repos/terragonlabs/hf-eco2ai-plugin/actions/runs"
+        ],
+        "metrics_collected": ["stars", "forks", "issues", "pull_requests", "build_status"]
+      },
+      "pypi": {
+        "api_endpoints": [
+          "https://pypistats.org/api/packages/hf-eco2ai-plugin/recent"
+        ],
+        "metrics_collected": ["downloads", "version_adoption"]
+      },
+      "codecov": {
+        "api_endpoints": [
+          "https://codecov.io/api/v2/github/terragonlabs/hf-eco2ai-plugin"
+        ],
+        "metrics_collected": ["test_coverage", "coverage_trend"]
+      },
+      "prometheus": {
+        "endpoints": [
+          "http://prometheus:9090/api/v1/query"
+        ],
+        "metrics_collected": ["performance", "sustainability", "system_health"]
+      }
+    }
+  },
+  "metadata": {
+    "schema_version": "1.0.0",
+    "created_by": "HF Eco2AI Plugin Metrics System",
+    "created_at": "2025-08-02T00:00:00Z",
+    "updated_by": "Automated Metrics Collection",
+    "updated_at": "2025-08-02T00:00:00Z",
+    "next_review_date": "2025-11-02T00:00:00Z",
+    "contact": {
+      "team": "Terragon Labs Engineering",
+      "email": "engineering@terragonlabs.com",
+      "slack": "#hf-eco2ai-metrics"
+    }
+  }
+}
