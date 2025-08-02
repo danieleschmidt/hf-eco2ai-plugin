@@ -1,5 +1,5 @@
 # Multi-stage build for HF Eco2AI Plugin
-FROM python:3.10-slim as builder
+FROM python:3.13-slim as builder
 
 # Set build arguments
 ARG BUILD_DATE
@@ -41,7 +41,7 @@ COPY src/ src/
 RUN python -m build --wheel --no-isolation
 
 # Production stage
-FROM python:3.10-slim as production
+FROM python:3.13-slim as production
 
 # Create non-root user
 RUN groupadd --gid 1000 appuser \
