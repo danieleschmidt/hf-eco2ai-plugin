@@ -492,9 +492,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ```bibtex
 @software{hf_eco2ai_plugin,
   title={HF Eco2AI Plugin: Carbon Tracking for Transformers Training},
-  author={Your Name},
+  author={Daniel Schmidt},
   year={2025},
-  url={https://github.com/yourusername/hf-eco2ai-plugin}
+  url={https://github.com/daniel Schmidt/hf-eco2ai-plugin}
 }
 
 @article{eco2ai,
