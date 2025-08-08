@@ -12,6 +12,10 @@ from .config import CarbonConfig
 from .models import CarbonMetrics, CarbonReport, CarbonSummary, EnvironmentalImpact
 from .monitoring import EnergyTracker
 from .exporters import PrometheusExporter, ReportExporter
+from .error_handling import get_error_handler, resilient_operation, handle_gracefully, ErrorSeverity
+from .validation import CarbonTrackingValidator as DataValidator
+from .health_monitor import get_health_monitor, start_health_monitoring
+from .performance_optimizer import get_performance_optimizer, optimized, start_performance_optimization
 
 logger = logging.getLogger(__name__)
 
@@ -46,11 +50,36 @@ class Eco2AICallback(TrainerCallback):
         """
         self.config = config or CarbonConfig()
         
+        # Initialize error handling, validation, health monitoring, and performance optimization
+        self.error_handler = get_error_handler()
+        self.validator = DataValidator()
+        self.health_monitor = get_health_monitor()
+        self.performance_optimizer = get_performance_optimizer()
+        
+        # Start health monitoring if not already started
+        if hasattr(self.config, 'enable_health_monitoring') and self.config.enable_health_monitoring:
+            start_health_monitoring()
+        
+        # Start performance optimization
+        if hasattr(self.config, 'enable_performance_optimization') and self.config.enable_performance_optimization:
+            start_performance_optimization()
+            # Optimize for expected load
+            load = getattr(self.config, 'expected_load', 'medium')
+            self.performance_optimizer.optimize_for_scale(load)
+        
         # Validate environment and dependencies
-        missing_deps = self.config.validate_environment()
-        if missing_deps:
-            logger.warning(f"Missing dependencies: {missing_deps}")
-            logger.warning("Some features may not work correctly")
+        try:
+            missing_deps = self.config.validate_environment()
+            if missing_deps:
+                self.error_handler.handle_error(
+                    ImportError(f"Missing dependencies: {missing_deps}"),
+                    {"dependencies": missing_deps},
+                    ErrorSeverity.MEDIUM
+                )
+                logger.warning(f"Missing dependencies: {missing_deps}")
+                logger.warning("Some features may not work correctly")
+        except Exception as e:
+            self.error_handler.handle_error(e, {"phase": "initialization"}, ErrorSeverity.HIGH)
         
         # Initialize tracking components
         self.energy_tracker = EnergyTracker(
@@ -119,11 +148,21 @@ class Eco2AICallback(TrainerCallback):
         except ImportError:
             logger.warning("wandb not available despite wandb_tracking=True")
     
+    @resilient_operation(max_attempts=3, circuit_breaker=True)
     def on_train_begin(self, args: TrainingArguments, state: TrainerState, 
                        control: TrainerControl, model=None, **kwargs):
         """Called at the beginning of training."""
-        self._training_start_time = time.time()
-        self._last_step_time = self._training_start_time
+        try:
+            # Validate training arguments
+            validation_result = self.validator.validate_training_args(args)
+            if not validation_result.get("valid", True):
+                logger.warning(f"Training args validation warning: {validation_result.get('message')}")
+            
+            self._training_start_time = time.time()
+            self._last_step_time = self._training_start_time
+        except Exception as e:
+            self.error_handler.handle_error(e, {"phase": "train_begin"}, ErrorSeverity.HIGH)
+            raise
         
         # Start energy tracking
         if self.energy_tracker.is_available():
@@ -175,6 +214,7 @@ class Eco2AICallback(TrainerCallback):
             logger.info(f"Training started - tracking carbon for {self.config.country}/{self.config.region}")
             logger.info(f"Grid carbon intensity: {self.carbon_report.system_metadata['carbon_intensity']:.0f} g CO₂/kWh")
     
+    @handle_gracefully(severity=ErrorSeverity.MEDIUM, fallback_value=None)
     def on_step_end(self, args: TrainingArguments, state: TrainerState, 
                     control: TrainerControl, logs: Optional[Dict[str, float]] = None, **kwargs):
         """Called at the end of each training step."""
@@ -246,6 +286,8 @@ class Eco2AICallback(TrainerCallback):
         
         logger.info("Carbon tracking completed")
     
+    @optimized(cache_ttl=10.0)  # Cache for 10 seconds for rapid step logging
+    @handle_gracefully(severity=ErrorSeverity.LOW, fallback_value=None)
     def _log_metrics(self, logs: Optional[Dict[str, float]], timestamp: float, 
                      is_epoch_end: bool = False, is_train_end: bool = False):
         """Log current carbon metrics."""
@@ -381,6 +423,7 @@ class Eco2AICallback(TrainerCallback):
             self.carbon_report.summary.estimated_cost_usd = energy_cost
             self.carbon_report.summary.carbon_credit_cost_usd = carbon_credit_cost
     
+    @optimized(cache_ttl=5.0)  # Cache metrics for 5 seconds
     def get_current_metrics(self) -> Dict[str, float]:
         """Get current carbon tracking metrics.
         

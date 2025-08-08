@@ -71,6 +71,15 @@ class CarbonConfig:
     estimate_costs: bool = False
     electricity_price_per_kwh: float = 0.12  # USD
     
+    # Performance optimization and scaling
+    enable_performance_optimization: bool = False
+    enable_health_monitoring: bool = False
+    expected_load: str = "medium"  # "low", "medium", "high"
+    cache_size: int = 5000
+    batch_size: int = 50
+    enable_caching: bool = True
+    enable_batching: bool = True
+    
     def __post_init__(self):
         """Validate configuration after initialization."""
         self._validate_config()

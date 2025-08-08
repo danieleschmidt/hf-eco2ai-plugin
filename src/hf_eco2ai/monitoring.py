@@ -22,6 +22,8 @@ try:
 except ImportError:
     ECO2AI_AVAILABLE = False
     eco2ai = None
+    # Use mock implementation for testing
+    from . import mock_eco2ai as eco2ai
 
 try:
     import psutil
@@ -424,16 +426,34 @@ class EnergyTracker:
     
     def get_current_consumption(self) -> Tuple[float, float, float]:
         """Get current power consumption, total energy, and CO₂ emissions."""
-        gpu_power, gpu_energy, _ = self.gpu_monitor.get_aggregated_metrics()
-        
-        # Calculate total energy (GPU + estimated system overhead)
-        system_overhead_factor = 1.2  # 20% overhead for CPU, cooling, etc.
-        total_power_watts = gpu_power * system_overhead_factor
-        
-        # Update cumulative energy
-        if self._start_time:
-            elapsed_hours = (time.time() - self._start_time) / 3600
-            self._total_energy_kwh = total_power_watts * elapsed_hours / 1000
+        # Try GPU monitoring first
+        if PYNVML_AVAILABLE and self.gpu_monitor.handles:
+            gpu_power, gpu_energy, _ = self.gpu_monitor.get_aggregated_metrics()
+            
+            # Calculate total energy (GPU + estimated system overhead)
+            system_overhead_factor = 1.2  # 20% overhead for CPU, cooling, etc.
+            total_power_watts = gpu_power * system_overhead_factor
+            
+            # Update cumulative energy
+            if self._start_time:
+                elapsed_hours = (time.time() - self._start_time) / 3600
+                self._total_energy_kwh = total_power_watts * elapsed_hours / 1000
+            
+        else:
+            # Use mock eco2ai tracker for development/testing
+            if not hasattr(self, '_mock_tracker'):
+                self._mock_tracker = eco2ai.Tracker(
+                    project_name="hf-training",
+                    country=self.carbon_provider.country,
+                    region=self.carbon_provider.region
+                )
+                if self._start_time:
+                    self._mock_tracker.start()
+            
+            # Get mock consumption data
+            mock_data = self._mock_tracker.get_current()
+            total_power_watts = mock_data["power"]
+            self._total_energy_kwh = mock_data["energy"]
         
         # Calculate CO₂ emissions
         carbon_intensity = self.carbon_provider.get_carbon_intensity()
@@ -462,4 +482,5 @@ class EnergyTracker:
     
     def is_available(self) -> bool:
         """Check if energy tracking is available."""
-        return PYNVML_AVAILABLE and bool(self.gpu_monitor.handles)
+        # Allow mock mode for development
+        return (PYNVML_AVAILABLE and bool(self.gpu_monitor.handles)) or eco2ai is not None

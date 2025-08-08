@@ -580,3 +580,93 @@ def secure_export(func):
             raise
     
     return wrapper
+
+
+class SecurityManager:
+    """Comprehensive security manager for carbon tracking operations."""
+    
+    def __init__(self, config: Optional[SecurityConfig] = None):
+        """Initialize security manager."""
+        self.config = config or SecurityConfig()
+        self.validator = SecurityValidator()
+        self.sanitizer = DataSanitizer()
+        self.audit_logger = AuditLogger()
+        self.compliance_checker = ComplianceChecker()
+        self._lock = threading.Lock()
+        
+        logger.info("Initialized SecurityManager with robust protections")
+    
+    def validate_data(self, data: Any) -> Dict[str, Any]:
+        """Comprehensive data validation."""
+        with self._lock:
+            try:
+                # Input validation
+                validation_result = self.validator.validate_input(data)
+                if not validation_result["valid"]:
+                    self.audit_logger.log_event("validation_failure", {
+                        "reason": validation_result["message"],
+                        "data_type": type(data).__name__
+                    }, severity="warning")
+                
+                # PII scanning
+                if isinstance(data, (str, dict)):
+                    data_str = json.dumps(data) if isinstance(data, dict) else data
+                    pii_findings = self.validator.scan_for_pii(data_str)
+                    if pii_findings:
+                        self.audit_logger.log_event("pii_detected", {
+                            "findings_count": len(pii_findings)
+                        }, severity="high")
+                
+                return validation_result
+                
+            except Exception as e:
+                self.audit_logger.log_event("security_validation_error", {
+                    "error": str(e)
+                }, severity="error")
+                raise
+    
+    def sanitize_data(self, data: Any) -> Any:
+        """Sanitize data for safe processing."""
+        try:
+            if isinstance(data, dict):
+                sanitized = {}
+                for key, value in data.items():
+                    sanitized[key] = self.sanitizer.sanitize_value(value)
+                return sanitized
+            elif isinstance(data, str):
+                return self.sanitizer.sanitize_string(data)
+            else:
+                return data
+        except Exception as e:
+            logger.error(f"Data sanitization failed: {e}")
+            raise
+    
+    def check_compliance(self, framework: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Check compliance with security frameworks."""
+        return self.compliance_checker.check_compliance(framework, data)
+    
+    def audit_operation(self, operation: str, metadata: Dict[str, Any]):
+        """Audit security-relevant operations."""
+        self.audit_logger.log_event(operation, metadata)
+    
+    def get_security_summary(self) -> Dict[str, Any]:
+        """Get security status summary."""
+        return {
+            "config": {
+                "encryption_enabled": self.config.enable_data_encryption,
+                "audit_enabled": self.config.enable_audit_logging,
+                "pii_detection": self.config.enable_pii_detection,
+                "validation_strict": self.config.strict_validation
+            },
+            "status": "active",
+            "components": {
+                "validator": "active",
+                "sanitizer": "active", 
+                "audit_logger": "active",
+                "compliance_checker": "active"
+            }
+        }
+
+
+# Global instances
+_security_manager = SecurityManager()

@@ -147,7 +147,7 @@ class CarbonTrackingValidator:
         self.config = config or CarbonConfig()
         self.results: List[ValidationResult] = []
     
-    def validate_all(self) -> ValidationReport:
+    def validate_all(self) -> Dict[str, Any]:
         """Run all validation checks.
         
         Returns:
@@ -532,6 +532,23 @@ class CarbonTrackingValidator:
                     message="wandb tracking enabled but wandb not available",
                     fix_suggestion="Install wandb: pip install wandb"
                 ))
+
+
+    def validate_training_args(self, args) -> Dict[str, Any]:
+        """Validate training arguments."""
+        try:
+            # Basic validation
+            if not hasattr(args, 'num_train_epochs') or args.num_train_epochs <= 0:
+                return {"valid": False, "message": "Invalid num_train_epochs"}
+            
+            if not hasattr(args, 'per_device_train_batch_size') or args.per_device_train_batch_size <= 0:
+                return {"valid": False, "message": "Invalid per_device_train_batch_size"}
+            
+            return {"valid": True, "message": "Training args validation passed"}
+            
+        except Exception as e:
+            logger.warning(f"Training args validation error: {e}")
+            return {"valid": False, "message": f"Validation error: {e}"}
 
 
 class ErrorHandler:
