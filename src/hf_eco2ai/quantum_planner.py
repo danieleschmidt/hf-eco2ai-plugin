@@ -98,22 +98,23 @@ class QuantumCircuit:
         if sum(probabilities) == 0:
             return self.states[:num_measurements]  # Fallback
         
-        # Weighted random selection based on quantum probabilities
-        selected_indices = np.random.choice(
-            len(self.states), 
-            size=num_measurements, 
-            p=np.array(probabilities) / sum(probabilities),
-            replace=False
-        )
+        # Weighted random sampling based on quantum probabilities
+        measured_states = []
+        for _ in range(num_measurements):
+            cumulative_prob = 0
+            random_value = np.random.random()
+            
+            for state in self.states:
+                cumulative_prob += state.probability()
+                if random_value <= cumulative_prob:
+                    measured_states.append(state)
+                    break
         
-        measured_states = [self.states[i] for i in selected_indices]
-        
-        # Record measurement
+        # Store measurement in history
         self.measurement_history.append({
             "timestamp": time.time(),
-            "num_measurements": num_measurements,
-            "selected_indices": selected_indices.tolist(),
-            "probabilities": probabilities
+            "measured_configs": [s.configuration for s in measured_states],
+            "total_probability": sum(probabilities)
         })
         
         return measured_states
@@ -228,21 +229,25 @@ class QuantumInspiredTaskPlanner:
         # Generate quantum states using tensor product
         states = []
         
-        # Sample configurations from parameter space (quantum superposition)
-        num_states = min(64, np.prod([len(space) for space in parameter_spaces.values()]))
+        # Generate quantum states using advanced superposition sampling
+        num_states = min(128, np.prod([len(space) for space in parameter_spaces.values()]))
         
-        for _ in range(num_states):
-            config = {}
-            for param, space in parameter_spaces.items():
-                config[param] = np.random.choice(space)
+        # Use quantum-inspired sampling with controlled exploration
+        states_configs = self._quantum_sampling(parameter_spaces, num_states, requirements)
+        
+        for config in states_configs:
             
-            # Calculate state properties
+            # Calculate state properties with advanced scoring
             energy = self._calculate_energy_score(config, requirements)
             carbon_score = self._calculate_carbon_score(config, requirements)
             performance_score = self._calculate_performance_score(config, requirements)
             
-            # Initial quantum amplitude (uniform superposition)
-            amplitude = complex(1.0 / math.sqrt(num_states), 0)
+            # Quantum amplitude based on initial assessment (non-uniform)
+            initial_score = (carbon_score * 0.4 + performance_score * 0.3 + (1.0/max(energy, 0.001)) * 0.3)
+            amplitude_magnitude = math.sqrt(initial_score / num_states) if initial_score > 0 else 1.0 / math.sqrt(num_states)
+            quantum_phase = 2 * math.pi * np.random.random()  # Random phase
+            amplitude = complex(amplitude_magnitude * math.cos(quantum_phase), 
+                              amplitude_magnitude * math.sin(quantum_phase))
             
             state = QuantumState(
                 configuration=config,
@@ -262,7 +267,85 @@ class QuantumInspiredTaskPlanner:
             entanglement_matrix=entanglement_matrix
         )
         
-        logger.debug(f"Initialized {len(states)} quantum states")
+        logger.debug(f"Initialized {len(states)} quantum states with advanced superposition")
+    
+    def _quantum_sampling(self, parameter_spaces: Dict[str, List], 
+                         num_states: int, requirements: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Advanced quantum-inspired sampling of configuration space."""
+        configs = []
+        
+        # Phase 1: Pure random sampling (exploration)
+        exploration_states = num_states // 3
+        for _ in range(exploration_states):
+            config = {}
+            for param, space in parameter_spaces.items():
+                config[param] = np.random.choice(space)
+            configs.append(config)
+        
+        # Phase 2: Targeted sampling based on known good patterns (exploitation)
+        exploitation_states = num_states // 3
+        good_patterns = self._get_known_good_patterns(requirements)
+        
+        for pattern in good_patterns[:exploitation_states]:
+            config = {}
+            for param, space in parameter_spaces.items():
+                if param in pattern:
+                    # Use pattern value with small perturbation
+                    target_val = pattern[param]
+                    if target_val in space:
+                        config[param] = target_val
+                    else:
+                        # Find closest value in space
+                        config[param] = min(space, key=lambda x: abs(x - target_val) if isinstance(x, (int, float)) else float('inf'))
+                else:
+                    config[param] = np.random.choice(space)
+            configs.append(config)
+        
+        # Phase 3: Quantum tunneling - explore unlikely but potentially optimal regions
+        tunneling_states = num_states - exploration_states - exploitation_states
+        for _ in range(tunneling_states):
+            config = {}
+            for param, space in parameter_spaces.items():
+                # Bias toward extreme values (quantum tunneling effect)
+                if np.random.random() < 0.3:  # 30% chance of extreme value
+                    config[param] = np.random.choice([space[0], space[-1]])
+                else:
+                    config[param] = np.random.choice(space)
+            configs.append(config)
+        
+        return configs
+    
+    def _get_known_good_patterns(self, requirements: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Get known good configuration patterns based on model type and requirements."""
+        patterns = []
+        
+        model_type = requirements.get("model_type", "transformer")
+        model_size = requirements.get("model_parameters", 100_000_000)
+        
+        if model_type == "transformer":
+            if model_size < 1_000_000:  # Small model
+                patterns.extend([
+                    {"batch_size": 64, "learning_rate": 5e-4, "precision": "fp16"},
+                    {"batch_size": 32, "learning_rate": 1e-4, "precision": "bf16"},
+                ])
+            elif model_size < 100_000_000:  # Medium model
+                patterns.extend([
+                    {"batch_size": 32, "learning_rate": 2e-4, "precision": "fp16"},
+                    {"batch_size": 16, "learning_rate": 1e-4, "precision": "bf16"},
+                ])
+            else:  # Large model
+                patterns.extend([
+                    {"batch_size": 16, "learning_rate": 1e-4, "precision": "fp16"},
+                    {"batch_size": 8, "learning_rate": 5e-5, "precision": "bf16"},
+                ])
+        
+        # Add carbon-optimal patterns
+        patterns.extend([
+            {"start_time_hour": 2, "precision": "fp16"},  # Low carbon hour + efficiency
+            {"start_time_hour": 14, "precision": "bf16"},  # Solar peak + modern precision
+        ])
+        
+        return patterns
     
     def _calculate_energy_score(self, config: Dict[str, Any], 
                               requirements: Dict[str, Any]) -> float:
@@ -415,69 +498,203 @@ class QuantumInspiredTaskPlanner:
             return 1.0 if val1 == val2 else 0.0
     
     def _quantum_optimize(self) -> List[QuantumState]:
-        """Apply quantum optimization algorithm."""
-        logger.debug("Applying quantum optimization")
+        """Apply advanced quantum annealing optimization algorithm."""
+        logger.debug("Applying quantum annealing optimization")
+        
+        # Initialize annealing parameters
+        initial_temperature = 10.0
+        final_temperature = 0.01
+        cooling_rate = 0.95
+        current_temperature = initial_temperature
+        
+        best_energy = float('inf')
+        best_states = []
+        stagnation_count = 0
+        max_stagnation = 20
         
         for iteration in range(self.max_iterations):
-            # Apply quantum gates
-            self._apply_quantum_evolution()
+            # Apply quantum annealing step
+            self._apply_quantum_annealing_step(current_temperature)
             
-            # Apply interference to amplify good solutions
-            self.quantum_circuit.apply_interference("carbon_score")
-            self.quantum_circuit.apply_interference("performance_score")
+            # Apply multi-objective interference
+            self._apply_multi_objective_interference()
+            
+            # Track best solutions (Pareto optimal)
+            current_best_energy = min(state.energy for state in self.quantum_circuit.states)
+            if current_best_energy < best_energy:
+                best_energy = current_best_energy
+                best_states = self._get_pareto_optimal_states()
+                stagnation_count = 0
+            else:
+                stagnation_count += 1
+            
+            # Adaptive cooling with restart mechanism
+            if stagnation_count > max_stagnation:
+                # Restart with higher temperature
+                current_temperature = initial_temperature * 0.5
+                stagnation_count = 0
+                logger.debug(f"Quantum annealing restart at iteration {iteration}")
+            else:
+                current_temperature *= cooling_rate
             
             # Check convergence
-            if self._check_convergence():
+            if self._check_advanced_convergence(iteration):
                 logger.debug(f"Quantum optimization converged at iteration {iteration}")
+                break
+            
+            # Stop if temperature too low
+            if current_temperature < final_temperature:
+                logger.debug(f"Quantum annealing completed at iteration {iteration}")
                 break
         
         return self.quantum_circuit.states
     
-    def _apply_quantum_evolution(self):
-        """Apply quantum evolution operator."""
+    def _apply_quantum_annealing_step(self, temperature: float):
+        """Apply quantum annealing evolution step with temperature control."""
         for state in self.quantum_circuit.states:
-            # Rotate amplitude based on state quality
+            # Calculate energy-based rotation with thermal fluctuation
+            energy_factor = math.exp(-state.energy / max(temperature, 0.001))
             total_score = state.total_score()
-            rotation_angle = total_score * np.pi / 10  # Scale rotation
             
-            # Apply rotation
-            state.amplitude *= complex(np.cos(rotation_angle), np.sin(rotation_angle))
+            # Quantum rotation with thermal noise
+            base_rotation = total_score * np.pi / 8
+            thermal_noise = np.random.normal(0, temperature / 10)
+            rotation_angle = base_rotation + thermal_noise
+            
+            # Apply rotation with temperature-dependent amplitude
+            rotation_amplitude = energy_factor * 0.8 + 0.2  # Ensure some minimum rotation
+            state.amplitude *= complex(
+                rotation_amplitude * np.cos(rotation_angle), 
+                rotation_amplitude * np.sin(rotation_angle)
+            )
         
-        # Apply entanglement operations
-        self._apply_entanglement()
+        # Apply temperature-dependent entanglement
+        self._apply_thermal_entanglement(temperature)
         
         # Normalize after evolution
         self.quantum_circuit.normalize()
     
-    def _apply_entanglement(self):
-        """Apply entanglement operations between quantum states."""
+    def _apply_thermal_entanglement(self, temperature: float):
+        """Apply temperature-dependent entanglement operations."""
         states = self.quantum_circuit.states
         matrix = self.quantum_circuit.entanglement_matrix
         
-        # Apply entanglement matrix transformation
+        # Scale entanglement strength by temperature
+        entanglement_strength = min(1.0, temperature / 5.0)
+        
+        # Apply entanglement matrix transformation with thermal scaling
         amplitudes = np.array([state.amplitude for state in states])
-        new_amplitudes = matrix @ amplitudes
+        identity = np.eye(len(states))
+        thermal_matrix = (1 - entanglement_strength) * identity + entanglement_strength * matrix
+        
+        new_amplitudes = thermal_matrix @ amplitudes
         
         for i, state in enumerate(states):
             state.amplitude = new_amplitudes[i]
     
-    def _check_convergence(self) -> bool:
-        """Check if quantum optimization has converged."""
-        if len(self.quantum_circuit.measurement_history) < 2:
+    def _apply_multi_objective_interference(self):
+        """Apply interference targeting multiple objectives simultaneously."""
+        # Apply interference for each objective with different weights
+        objectives = [
+            ("carbon_score", 0.4),
+            ("performance_score", 0.3), 
+            ("energy", 0.3)  # Lower energy is better
+        ]
+        
+        for objective, weight in objectives:
+            if objective == "energy":
+                # For energy, lower is better, so reverse sort
+                sorted_states = sorted(self.quantum_circuit.states, 
+                                     key=lambda s: s.energy, reverse=False)
+            else:
+                sorted_states = sorted(self.quantum_circuit.states, 
+                                     key=lambda s: getattr(s, objective), reverse=True)
+            
+            # Apply weighted interference
+            top_third = len(sorted_states) // 3
+            
+            for i, state in enumerate(sorted_states):
+                if i < top_third:
+                    # Constructive interference - weighted by objective importance
+                    phase_boost = weight * math.pi / 3
+                    state.amplitude *= complex(math.cos(phase_boost), math.sin(phase_boost))
+                elif i > 2 * top_third:
+                    # Destructive interference
+                    phase_reduction = -weight * math.pi / 4
+                    state.amplitude *= complex(math.cos(phase_reduction), math.sin(phase_reduction))
+        
+        self.quantum_circuit.normalize()
+    
+    def _get_pareto_optimal_states(self) -> List[QuantumState]:
+        """Find Pareto optimal solutions in multi-objective space."""
+        pareto_states = []
+        
+        for state in self.quantum_circuit.states:
+            is_dominated = False
+            
+            for other_state in self.quantum_circuit.states:
+                if state == other_state:
+                    continue
+                
+                # Check if other_state dominates state
+                # (better or equal in all objectives, strictly better in at least one)
+                carbon_better = other_state.carbon_score >= state.carbon_score
+                performance_better = other_state.performance_score >= state.performance_score
+                energy_better = other_state.energy <= state.energy  # Lower energy is better
+                
+                # Check strict dominance
+                carbon_strictly_better = other_state.carbon_score > state.carbon_score
+                performance_strictly_better = other_state.performance_score > state.performance_score
+                energy_strictly_better = other_state.energy < state.energy
+                
+                if (carbon_better and performance_better and energy_better and 
+                    (carbon_strictly_better or performance_strictly_better or energy_strictly_better)):
+                    is_dominated = True
+                    break
+            
+            if not is_dominated:
+                pareto_states.append(state)
+        
+        return pareto_states
+    
+    def _check_advanced_convergence(self, iteration: int) -> bool:
+        """Advanced convergence checking with multiple criteria."""
+        if iteration < 10:  # Need minimum iterations
             return False
         
-        # Check if probabilities have stabilized
+        # Check probability stabilization
         current_probs = [state.probability() for state in self.quantum_circuit.states]
         
-        # Simple convergence check - could be more sophisticated
-        max_prob_change = 0.0
+        prob_convergence = False
         if hasattr(self, '_last_probabilities'):
-            for curr, last in zip(current_probs, self._last_probabilities):
-                max_prob_change = max(max_prob_change, abs(curr - last))
+            max_prob_change = max(abs(curr - last) 
+                                for curr, last in zip(current_probs, self._last_probabilities))
+            prob_convergence = max_prob_change < self.convergence_threshold
         
+        # Check energy convergence
+        current_energies = [state.energy for state in self.quantum_circuit.states]
+        energy_convergence = False
+        if hasattr(self, '_last_energies'):
+            max_energy_change = max(abs(curr - last) 
+                                  for curr, last in zip(current_energies, self._last_energies))
+            energy_convergence = max_energy_change < (self.convergence_threshold * 10)
+        
+        # Check amplitude convergence
+        current_amplitudes = [abs(state.amplitude) for state in self.quantum_circuit.states]
+        amplitude_convergence = False
+        if hasattr(self, '_last_amplitudes'):
+            max_amp_change = max(abs(curr - last) 
+                               for curr, last in zip(current_amplitudes, self._last_amplitudes))
+            amplitude_convergence = max_amp_change < self.convergence_threshold
+        
+        # Store for next iteration
         self._last_probabilities = current_probs
+        self._last_energies = current_energies
+        self._last_amplitudes = current_amplitudes
         
-        return max_prob_change < self.convergence_threshold
+        # Require convergence in at least 2 out of 3 criteria
+        convergence_count = sum([prob_convergence, energy_convergence, amplitude_convergence])
+        return convergence_count >= 2
     
     def _generate_training_plan(self, 
                                best_state: QuantumState,
@@ -507,6 +724,10 @@ class QuantumInspiredTaskPlanner:
             batch_efficiency = config["batch_size"] / 32  # Baseline batch size
             estimated_duration /= batch_efficiency ** 0.5
         
+        # Calculate quantum coherence metrics
+        coherence_score = self._calculate_quantum_coherence()
+        entanglement_score = self._calculate_entanglement_measure()
+        
         return {
             "optimal_configuration": config,
             "baseline_configuration": baseline_config,
@@ -522,7 +743,9 @@ class QuantumInspiredTaskPlanner:
                 "probability": best_state.probability(),
                 "energy_level": best_state.energy,
                 "carbon_score": best_state.carbon_score,
-                "performance_score": best_state.performance_score
+                "performance_score": best_state.performance_score,
+                "coherence_score": coherence_score,
+                "entanglement_score": entanglement_score
             },
             "entanglement_summary": self._summarize_entanglements(best_state),
             "confidence_level": min(best_state.probability() * 100, 95),
@@ -615,6 +838,102 @@ class QuantumInspiredTaskPlanner:
                     entanglements[f"{param}={config[param]}"] = entangled_with
         
         return entanglements
+    
+    def _calculate_quantum_coherence(self) -> float:
+        """Calculate quantum coherence measure for the current state ensemble."""
+        if not self.quantum_circuit or not self.quantum_circuit.states:
+            return 0.0
+        
+        # Calculate von Neumann entropy as coherence measure
+        amplitudes = np.array([state.amplitude for state in self.quantum_circuit.states])
+        probabilities = np.abs(amplitudes) ** 2
+        
+        # Normalize probabilities
+        total_prob = np.sum(probabilities)
+        if total_prob > 0:
+            probabilities = probabilities / total_prob
+        
+        # Calculate von Neumann entropy
+        entropy = 0.0
+        for p in probabilities:
+            if p > 1e-10:  # Avoid log(0)
+                entropy -= p * np.log2(p)
+        
+        # Normalize to [0, 1] scale
+        max_entropy = np.log2(len(probabilities))
+        coherence = entropy / max_entropy if max_entropy > 0 else 0.0
+        
+        return float(coherence)
+    
+    def _calculate_entanglement_measure(self) -> float:
+        """Calculate quantum entanglement measure between states."""
+        if not self.quantum_circuit or len(self.quantum_circuit.states) < 2:
+            return 0.0
+        
+        # Calculate pairwise entanglement using quantum mutual information
+        states = self.quantum_circuit.states
+        n_states = len(states)
+        
+        total_entanglement = 0.0
+        pairs_counted = 0
+        
+        for i in range(n_states):
+            for j in range(i + 1, n_states):
+                state_i = states[i]
+                state_j = states[j]
+                
+                # Calculate entanglement between parameter configurations
+                entanglement = self._calculate_configuration_entanglement(
+                    state_i.configuration, state_j.configuration
+                )
+                
+                # Weight by quantum amplitudes
+                amplitude_weight = abs(state_i.amplitude * np.conj(state_j.amplitude))
+                weighted_entanglement = entanglement * amplitude_weight
+                
+                total_entanglement += weighted_entanglement
+                pairs_counted += 1
+        
+        # Normalize by number of pairs
+        avg_entanglement = total_entanglement / pairs_counted if pairs_counted > 0 else 0.0
+        
+        return float(avg_entanglement)
+    
+    def _calculate_configuration_entanglement(self, config1: Dict[str, Any], 
+                                            config2: Dict[str, Any]) -> float:
+        """Calculate entanglement between two parameter configurations."""
+        entanglement_score = 0.0
+        total_comparisons = 0
+        
+        for param, related_params in self.entanglement_map.items():
+            if param in config1 and param in config2:
+                # Check how many related parameters are also entangled
+                related_entangled = 0
+                for related in related_params:
+                    if related in config1 and related in config2:
+                        # Calculate correlation between parameters
+                        val1 = config1[related]
+                        val2 = config2[related]
+                        
+                        # Normalize values for comparison
+                        if isinstance(val1, (int, float)) and isinstance(val2, (int, float)):
+                            correlation = 1.0 - abs(val1 - val2) / (abs(val1) + abs(val2) + 1e-6)
+                        else:
+                            correlation = 1.0 if val1 == val2 else 0.0
+                        
+                        related_entangled += correlation
+                        total_comparisons += 1
+                
+                # Add to entanglement score
+                if len(related_params) > 0:
+                    param_entanglement = related_entangled / len(related_params)
+                    entanglement_score += param_entanglement
+        
+        # Normalize by total possible entanglements
+        if total_comparisons > 0:
+            return entanglement_score / len(self.entanglement_map)
+        else:
+            return 0.0
     
     def optimize_multi_objective(self, 
                                objectives: List[str],
