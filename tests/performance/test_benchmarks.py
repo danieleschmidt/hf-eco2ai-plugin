@@ -309,7 +309,7 @@ class TestPerformanceBenchmarks:
             # return len(report.to_dict())
             
             # Simulate report generation work
-            data = {"step": i, "energy": 0.1, "co2": 0.04} for i in range(1000)
+            data = [{"step": i, "energy": 0.1, "co2": 0.04} for i in range(1000)]
             report_dict = {
                 "total_energy": 25.5,
                 "total_co2": 10.8,
