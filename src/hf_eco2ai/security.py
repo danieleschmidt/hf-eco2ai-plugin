@@ -1,13 +1,20 @@
-"""Security and compliance utilities for carbon tracking."""
+"""Security and privacy features for carbon tracking."""
 
 import hashlib
 import hmac
 import secrets
 import time
 import logging
-from typing import Dict, List, Optional, Any, Set
-from dataclasses import dataclass
+from typing import Dict, List, Optional, Any, Union, Set
+from dataclasses import dataclass, field
 from pathlib import Path
+import json
+import re
+from functools import wraps
+from enum import Enum
+import threading
+import os
+import inspect
 import json
 import re
 from urllib.parse import urlparse

@@ -1,61 +1,89 @@
-"""Validation and error handling utilities for HF Eco2AI Plugin."""
+"""Comprehensive validation and error handling for carbon tracking."""
 
 import logging
 import time
+import inspect
 import traceback
-from typing import Dict, List, Optional, Any, Union, Callable
-from dataclasses import dataclass
+from typing import Dict, List, Optional, Any, Union, Callable, Type
+from dataclasses import dataclass, field
+from functools import wraps
+import asyncio
 from pathlib import Path
 import json
+import hashlib
+import secrets
+from enum import Enum
 from contextlib import contextmanager
 
 from .config import CarbonConfig
-from .utils import check_dependencies, get_system_info
+from .models import CarbonMetrics, CarbonReport
 
 logger = logging.getLogger(__name__)
+
+
+class ValidationSeverity(Enum):
+    """Validation severity levels."""
+    INFO = "info"
+    WARNING = "warning" 
+    ERROR = "error"
+    CRITICAL = "critical"
 
 
 @dataclass
 class ValidationResult:
     """Result of a validation check."""
     
-    component: str
-    status: str  # "pass", "warning", "error"
+    check_name: str
+    severity: ValidationSeverity
+    passed: bool
     message: str
     details: Optional[Dict[str, Any]] = None
-    fix_suggestion: Optional[str] = None
-    
-    def is_passing(self) -> bool:
-        """Check if validation is passing."""
-        return self.status == "pass"
-    
-    def is_warning(self) -> bool:
-        """Check if validation has warnings."""
-        return self.status == "warning"
-    
-    def is_error(self) -> bool:
-        """Check if validation has errors."""
-        return self.status == "error"
+    timestamp: float = field(default_factory=time.time)
+    remediation: Optional[str] = None
 
 
-@dataclass
-class ValidationReport:
-    """Comprehensive validation report."""
+@dataclass 
+class ValidationSuite:
+    """Collection of validation results."""
     
-    results: List[ValidationResult]
-    timestamp: float
-    system_info: Dict[str, Any]
+    suite_name: str
+    results: List[ValidationResult] = field(default_factory=list)
+    total_checks: int = 0
+    passed_checks: int = 0
+    failed_checks: int = 0
+    execution_time: float = 0.0
     
-    def get_errors(self) -> List[ValidationResult]:
-        """Get all error results."""
-        return [r for r in self.results if r.is_error()]
+    def add_result(self, result: ValidationResult):
+        """Add validation result to suite."""
+        self.results.append(result)
+        self.total_checks += 1
+        
+        if result.passed:
+            self.passed_checks += 1
+        else:
+            self.failed_checks += 1
     
-    def get_warnings(self) -> List[ValidationResult]:
-        """Get all warning results."""
-        return [r for r in self.results if r.is_warning()]
-    
-    def get_passing(self) -> List[ValidationResult]:
-        """Get all passing results."""
+    def get_summary(self) -> Dict[str, Any]:
+        """Get validation summary."""
+        severity_counts = {}
+        for severity in ValidationSeverity:
+            severity_counts[severity.value] = sum(
+                1 for r in self.results if r.severity == severity
+            )
+        
+        return {
+            "suite_name": self.suite_name,
+            "total_checks": self.total_checks,
+            "passed_checks": self.passed_checks,
+            "failed_checks": self.failed_checks,
+            "success_rate": self.passed_checks / max(self.total_checks, 1) * 100,
+            "execution_time": self.execution_time,
+            "severity_breakdown": severity_counts,
+            "critical_failures": [
+                r for r in self.results 
+                if r.severity == ValidationSeverity.CRITICAL and not r.passed
+            ]
+        }
         return [r for r in self.results if r.is_passing()]
     
     def has_errors(self) -> bool:
