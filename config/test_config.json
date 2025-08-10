@@ -1,0 +1,6 @@
+{
+  "project_name": "enterprise-test",
+  "grid_carbon_intensity": 200.0,
+  "api_key": "***REDACTED***",
+  "monitoring_enabled": true
+}

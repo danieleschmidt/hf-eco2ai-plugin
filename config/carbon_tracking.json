@@ -1,0 +1,9 @@
+{
+  "project_name": "hf-eco2ai-enterprise",
+  "grid_carbon_intensity": 240.0,
+  "monitoring_enabled": true,
+  "alert_thresholds": {
+    "co2_rate_kg_per_hour": 0.1,
+    "energy_efficiency_threshold": 1000
+  }
+}

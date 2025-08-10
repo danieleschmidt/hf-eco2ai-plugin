@@ -1,0 +1,2953 @@
+{
+  "timestamp": 1754830216.2594569,
+  "overall_status": "CRITICAL_FAIL",
+  "overall_score": 848.7303178042615,
+  "execution_time_seconds": 0.3807687759399414,
+  "critical_failures": [
+    "security"
+  ],
+  "quality_gates": {
+    "security": {
+      "status": "FAIL",
+      "score": 46.76056338028169,
+      "execution_time_ms": 98.08635711669922,
+      "critical": true,
+      "details": {
+        "no_hardcoded_secrets": {
+          "check": "hardcoded_secrets",
+          "violations": [],
+          "violation_count": 0,
+          "score": 100.0,
+          "status": "PASS"
+        },
+        "no_sql_injection": {
+          "check": "sql_injection",
+          "violations": [],
+          "violation_count": 0,
+          "score": 100.0,
+          "status": "PASS"
+        },
+        "secure_file_operations": {
+          "check": "file_operations",
+          "violations": [
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "pattern": "eval\\(",
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "pattern": "pickle\\.load\\(",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "pattern": "open\\([^)]*[\"\\']w[\"\\']",
+              "severity": "MEDIUM"
+            }
+          ],
+          "violation_count": 14,
+          "score": 0,
+          "status": "FAIL"
+        },
+        "input_validation": {
+          "check": "input_validation",
+          "total_functions": 284,
+          "validated_functions": 25,
+          "validation_ratio": 0.0880281690140845,
+          "score": 8.80281690140845,
+          "status": "FAIL"
+        },
+        "secure_imports": {
+          "check": "secure_imports",
+          "violations": [
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "risky_import": "pickle",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "risky_import": "subprocess",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "risky_import": "pickle",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "risky_import": "pickle",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "risky_import": "subprocess",
+              "severity": "MEDIUM"
+            }
+          ],
+          "violation_count": 5,
+          "score": 25,
+          "status": "WARN"
+        }
+      }
+    },
+    "performance": {
+      "status": "FAIL",
+      "score": 52.30769230769231,
+      "execution_time_ms": 15.15507698059082,
+      "critical": false,
+      "details": {
+        "code_efficiency": {
+          "check": "code_efficiency",
+          "violations": [
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "pattern": "\\.append\\([^)]+\\)\\s*for.*in",
+              "improvement": "Consider using list comprehension"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "pattern": "\\.append\\([^)]+\\)\\s*for.*in",
+              "improvement": "Consider using list comprehension"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "pattern": "\\.append\\([^)]+\\)\\s*for.*in",
+              "improvement": "Consider using list comprehension"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "pattern": "\\.append\\([^)]+\\)\\s*for.*in",
+              "improvement": "Consider using list comprehension"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "pattern": "\\.append\\([^)]+\\)\\s*for.*in",
+              "improvement": "Consider using list comprehension"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "pattern": "\\.append\\([^)]+\\)\\s*for.*in",
+              "improvement": "Consider using list comprehension"
+            }
+          ],
+          "violation_count": 6,
+          "score": 40,
+          "status": "WARN"
+        },
+        "memory_usage": {
+          "check": "memory_patterns",
+          "issues": [],
+          "issue_count": 0,
+          "score": 100,
+          "status": "PASS"
+        },
+        "computational_complexity": {
+          "check": "algorithmic_complexity",
+          "issues": [
+            {
+              "file": "src/hf_eco2ai/__init__.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "complexity": "O(n\u00b3)",
+              "severity": "HIGH",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "complexity": "O(n\u00b3)",
+              "severity": "HIGH",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "complexity": "O(n\u00b3)",
+              "severity": "HIGH",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "complexity": "O(n\u00b3)",
+              "severity": "HIGH",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "complexity": "O(n\u00b3)",
+              "severity": "HIGH",
+              "count": 2
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "complexity": "O(n\u00b3)",
+              "severity": "HIGH",
+              "count": 1
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "complexity": "O(n\u00b2)",
+              "severity": "MEDIUM",
+              "count": 1
+            }
+          ],
+          "high_complexity_count": 6,
+          "total_issues": 17,
+          "score": 0,
+          "status": "WARN"
+        },
+        "resource_optimization": {
+          "check": "resource_optimization",
+          "optimized_files": 18,
+          "total_files": 26,
+          "optimization_ratio": 0.6923076923076923,
+          "score": 69.23076923076923,
+          "status": "PASS"
+        }
+      }
+    },
+    "code_structure": {
+      "status": "FAIL",
+      "score": 14.583333333333332,
+      "execution_time_ms": 261.59095764160156,
+      "critical": false,
+      "details": {
+        "module_organization": {
+          "score": 33.33333333333333,
+          "init_files": 1,
+          "python_directories": 3,
+          "status": "WARN"
+        },
+        "import_structure": {
+          "score": 0,
+          "violations": [
+            {
+              "file": "src/hf_eco2ai/__init__.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/__init__.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/__init__.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/__init__.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/__init__.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 484,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 485,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 508,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "line": 530,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 19,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 20,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 21,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "line": 558,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 544,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 557,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 579,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "line": 599,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 133,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 142,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 202,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 203,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "line": 351,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 110,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "line": 134,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 202,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 207,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 213,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 219,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "line": 225,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "line": 295,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 425,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 459,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 460,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "line": 480,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 314,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 467,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 687,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "line": 688,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 27,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 39,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 127,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 139,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 189,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 269,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 381,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 580,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 627,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 628,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "line": 629,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/mock_eco2ai.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/mock_eco2ai.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/mock_eco2ai.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/mock_eco2ai.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "line": 324,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 20,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 26,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "line": 29,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 19,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 20,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 239,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 476,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 739,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "line": 745,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 19,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "line": 425,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 19,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 20,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 21,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 22,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 23,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 24,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 25,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 27,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 28,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "line": 29,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "line": 343,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 17,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 19,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 20,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "line": 128,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "line": 378,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 68,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 94,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 362,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 369,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 375,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 381,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 388,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 394,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 400,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 407,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 413,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 515,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 516,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/utils.py",
+              "line": 539,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 3,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 11,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 12,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 13,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 14,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 15,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 16,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 18,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 19,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 269,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 350,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 413,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 465,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 473,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 505,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 522,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "line": 642,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "line": 4,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "line": 5,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "line": 6,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "line": 7,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "line": 8,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "line": 9,
+              "issue": "Import not at top of file"
+            },
+            {
+              "file": "src/hf_eco2ai/lite_demo.py",
+              "line": 10,
+              "issue": "Import not at top of file"
+            }
+          ],
+          "violation_count": 368,
+          "status": "WARN"
+        },
+        "class_design": {
+          "score": 25,
+          "issues": [
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "issue": "Large class with 24 methods",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "issue": "Large class with 21 methods",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "issue": "Large class with 21 methods",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/integrations.py",
+              "issue": "Large class with 22 methods",
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/performance_optimizer.py",
+              "issue": "Large class with 21 methods",
+              "severity": "MEDIUM"
+            }
+          ],
+          "issue_count": 5,
+          "status": "WARN"
+        },
+        "function_complexity": {
+          "score": 0,
+          "issues": [
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "function": "__init__",
+              "complexity": 60,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/advanced_optimization.py",
+              "function": "selection_score",
+              "complexity": 29,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "__init__",
+              "complexity": 41,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "_register_routes",
+              "complexity": 40,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "health",
+              "complexity": 40,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "start_session",
+              "complexity": 40,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "get_session",
+              "complexity": 39,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "stop_session",
+              "complexity": 36,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "submit_metrics",
+              "complexity": 28,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "list_projects",
+              "complexity": 24,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "get_project_details",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "get_report",
+              "complexity": 15,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/api.py",
+              "function": "get_optimization_recommendations",
+              "complexity": 13,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "function": "add_result",
+              "complexity": 13,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "function": "__init__",
+              "complexity": 35,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "function": "save_results",
+              "complexity": 21,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/benchmark.py",
+              "function": "_run_dummy_workload",
+              "complexity": 15,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "function": "__init__",
+              "complexity": 65,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "function": "_setup_mlflow",
+              "complexity": 51,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "function": "on_step_end",
+              "complexity": 33,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "function": "on_train_end",
+              "complexity": 27,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "function": "_check_carbon_budget",
+              "complexity": 11,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "function": "__init__",
+              "complexity": 65,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/callback.py",
+              "function": "on_step_end",
+              "complexity": 33,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "function": "validate",
+              "complexity": 16,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/cli.py",
+              "function": "optimize",
+              "complexity": 13,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "function": "__post_init__",
+              "complexity": 32,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/config.py",
+              "function": "_setup_paths",
+              "complexity": 27,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "__init__",
+              "complexity": 70,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "start",
+              "complexity": 70,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "_scheduler_loop",
+              "complexity": 34,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "score_worker",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "_send_task_to_worker",
+              "complexity": 21,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "_heartbeat_monitor",
+              "complexity": 19,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "__init__",
+              "complexity": 70,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/distributed.py",
+              "function": "process_single",
+              "complexity": 20,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "function": "__init__",
+              "complexity": 11,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "function": "wrapper",
+              "complexity": 11,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/error_handling.py",
+              "function": "__init__",
+              "complexity": 11,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "function": "__init__",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "function": "record_metrics",
+              "complexity": 18,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "function": "__init__",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "function": "__init__",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/exporters.py",
+              "function": "__init__",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "function": "__init__",
+              "complexity": 57,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "function": "start_monitoring",
+              "complexity": 57,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/health.py",
+              "function": "__init__",
+              "complexity": 57,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "function": "start_monitoring",
+              "complexity": 29,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "function": "_trigger_alerts",
+              "complexity": 19,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "function": "add_alert_callback",
+              "complexity": 16,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/health_monitor.py",
+              "function": "__init__",
+              "complexity": 30,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/models.py",
+              "function": "add_metric",
+              "complexity": 15,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "__init__",
+              "complexity": 51,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "_initialize_gpus",
+              "complexity": 48,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "start_monitoring",
+              "complexity": 24,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "stop_monitoring",
+              "complexity": 17,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "__init__",
+              "complexity": 51,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "stop_monitoring",
+              "complexity": 17,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "__init__",
+              "complexity": 51,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "__init__",
+              "complexity": 51,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/monitoring.py",
+              "function": "start_tracking",
+              "complexity": 11,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "__init__",
+              "complexity": 25,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "__init__",
+              "complexity": 25,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "start_scheduler",
+              "complexity": 52,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "_process_scheduling_queue",
+              "complexity": 47,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "_complete_job",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "_update_active_jobs",
+              "complexity": 25,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "_resume_job",
+              "complexity": 14,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "_optimize_running_jobs",
+              "complexity": 12,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "__init__",
+              "complexity": 25,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "learn_from_training_run",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/optimization.py",
+              "function": "_update_learned_patterns",
+              "complexity": 22,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "function": "__init__",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "function": "__init__",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "function": "__init__",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "function": "__init__",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/performance.py",
+              "function": "run_with_semaphore",
+              "complexity": 15,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "function": "normalize",
+              "complexity": 12,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "function": "__init__",
+              "complexity": 148,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "function": "_initialize_quantum_superposition",
+              "complexity": 148,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "function": "_apply_quantum_annealing_step",
+              "complexity": 93,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/quantum_planner.py",
+              "function": "_apply_multi_objective_evolution",
+              "complexity": 25,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "function": "__init__",
+              "complexity": 40,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "function": "_setup_signal_handlers",
+              "complexity": 39,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "function": "record_failure",
+              "complexity": 38,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "function": "record_success",
+              "complexity": 34,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "function": "wrapper",
+              "complexity": 13,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "function": "__init__",
+              "complexity": 40,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/resilience.py",
+              "function": "__init__",
+              "complexity": 40,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "function": "__init__",
+              "complexity": 29,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "function": "__init__",
+              "complexity": 29,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "function": "__init__",
+              "complexity": 29,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/security.py",
+              "function": "__init__",
+              "complexity": 29,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "function": "__init__",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "function": "_init_database",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "function": "store_report",
+              "complexity": 23,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "function": "__init__",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/storage.py",
+              "function": "__init__",
+              "complexity": 26,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "add_result",
+              "complexity": 19,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "__init__",
+              "complexity": 49,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_dependencies",
+              "complexity": 49,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_configuration",
+              "complexity": 45,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_system_requirements",
+              "complexity": 40,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_gpu_setup",
+              "complexity": 34,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_storage_access",
+              "complexity": 27,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_monitoring_capabilities",
+              "complexity": 20,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_export_settings",
+              "complexity": 15,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "_validate_integration_settings",
+              "complexity": 11,
+              "severity": "MEDIUM"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "__init__",
+              "complexity": 49,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "handle_errors",
+              "complexity": 18,
+              "severity": "HIGH"
+            },
+            {
+              "file": "src/hf_eco2ai/validation.py",
+              "function": "handle_errors",
+              "complexity": 18,
+              "severity": "HIGH"
+            }
+          ],
+          "high_complexity_count": 93,
+          "total_issues": 111,
+          "status": "WARN"
+        }
+      }
+    },
+    "documentation": {
+      "status": "PASS",
+      "score": 100.0,
+      "execution_time_ms": 3.8785934448242188,
+      "critical": false,
+      "details": {
+        "documentation_files": {
+          "existing": 5,
+          "total": 5,
+          "coverage": 1.0
+        },
+        "docstring_coverage": {
+          "documented_functions": 284,
+          "total_functions": 284,
+          "coverage": 1.0
+        }
+      }
+    },
+    "testing": {
+      "status": "PASS",
+      "score": 4030.0,
+      "execution_time_ms": 1.9524097442626953,
+      "critical": false,
+      "details": {
+        "test_coverage_ratio": 0.5,
+        "test_files": 13,
+        "src_files": 26,
+        "test_types": {
+          "unit": 1,
+          "integration": 2,
+          "e2e": 1,
+          "performance": 2
+        },
+        "test_diversity_score": 100.0
+      }
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "category": "security",
+      "recommendation": "Address security issues - score: 46.8",
+      "action": "Review detailed findings and implement fixes"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "performance",
+      "recommendation": "Address performance issues - score: 52.3",
+      "action": "Review detailed findings and implement fixes"
+    },
+    {
+      "priority": "MEDIUM",
+      "category": "code_structure",
+      "recommendation": "Address code_structure issues - score: 14.6",
+      "action": "Review detailed findings and implement fixes"
+    },
+    {
+      "priority": "LOW",
+      "category": "Continuous Improvement",
+      "recommendation": "Implement automated quality gates in CI/CD pipeline",
+      "action": "Set up automated quality checks on pull requests"
+    }
+  ]
+}

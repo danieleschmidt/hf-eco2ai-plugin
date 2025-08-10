@@ -1,0 +1,136 @@
+# Default values for hf-eco2ai
+
+replicaCount: 3
+
+image:
+  repository: hf-eco2ai
+  pullPolicy: Always
+  tag: "0.1.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "9091"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+  metricsPort: 9091
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: hf-eco2ai.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: hf-eco2ai-tls
+      hosts:
+        - hf-eco2ai.example.com
+
+resources:
+  limits:
+    cpu: 2
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - hf-eco2ai
+        topologyKey: kubernetes.io/hostname
+
+persistence:
+  enabled: true
+  storageClass: "fast-ssd"
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+config:
+  environment: production
+  logLevel: INFO
+  monitoring:
+    enabled: true
+    prometheusPort: 9091
+  carbonTracking:
+    gridCarbonIntensity: 240.0
+    realTimeUpdates: true
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "changeme"
+    username: "hfeco2ai"
+    password: "changeme"
+    database: "hfeco2ai"
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "changeme"
+  replica:
+    replicaCount: 2
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+monitoring:
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+    adminPassword: "changeme"

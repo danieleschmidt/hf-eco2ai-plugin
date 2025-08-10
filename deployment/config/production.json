@@ -1,0 +1,35 @@
+{
+  "project_name": "hf-eco2ai-production",
+  "environment": "production",
+  "logging": {
+    "level": "INFO",
+    "format": "json",
+    "file": "/app/logs/application.log"
+  },
+  "monitoring": {
+    "enabled": true,
+    "prometheus_port": 9091,
+    "health_check_interval": 30,
+    "metrics_retention_hours": 168
+  },
+  "carbon_tracking": {
+    "grid_carbon_intensity": 240.0,
+    "real_time_updates": true,
+    "regional_data_source": "live",
+    "cache_ttl_seconds": 300
+  },
+  "performance": {
+    "max_workers": 16,
+    "batch_size_optimization": true,
+    "caching_enabled": true,
+    "async_processing": true
+  },
+  "security": {
+    "encryption_enabled": true,
+    "audit_logging": true,
+    "rate_limiting": true,
+    "cors_origins": [
+      "https://eco2ai.example.com"
+    ]
+  }
+}

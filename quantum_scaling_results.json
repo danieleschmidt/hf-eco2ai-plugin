@@ -1,0 +1,478 @@
+{
+  "demo_duration_seconds": 0.6319601535797119,
+  "carbon_processing": {
+    "duration_seconds": 0.006094932556152344,
+    "data_points_processed": 500,
+    "processing_rate": 82035.36222813331,
+    "sample_results": [
+      {
+        "energy_kwh": 0.018852811537887905,
+        "co2_kg": 0.0018470623213793203,
+        "grid_intensity": 224.55434022446548,
+        "efficiency_factor": 0.623283929550366,
+        "carbon_per_second": 2.050439998733324e-05,
+        "energy_efficiency": 53042.48642120732,
+        "processing_timestamp": 1754830084.6466165
+      },
+      {
+        "energy_kwh": 0.02020332162243772,
+        "co2_kg": 0.0022820691011303947,
+        "grid_intensity": 213.23313386094162,
+        "efficiency_factor": 0.7567514877479184,
+        "carbon_per_second": 1.526453928056373e-05,
+        "energy_efficiency": 49496.81140003258,
+        "processing_timestamp": 1754830084.6466222
+      },
+      {
+        "energy_kwh": 0.012705053222579631,
+        "co2_kg": 0.0018247582807932572,
+        "grid_intensity": 325.0079715020221,
+        "efficiency_factor": 0.6313014711298753,
+        "carbon_per_second": 2.9418989694079882e-05,
+        "energy_efficiency": 78708.83989866202,
+        "processing_timestamp": 1754830084.6466293
+      }
+    ]
+  },
+  "report_generation": {
+    "duration_seconds": 0.01674962043762207,
+    "report": {
+      "timestamp": 1754830084.668199,
+      "data_points": 500,
+      "summary": {
+        "total_energy_kwh": 7.128438579291214,
+        "total_co2_kg": 0.8974959642993249,
+        "avg_energy_efficiency": 104949.07920182426,
+        "carbon_per_kwh": 0.12590358383764927,
+        "data_processing_efficiency": 5.905822282215495
+      },
+      "efficiency_analysis": {
+        "trend_direction": "declining",
+        "trend_magnitude": 0.07152728483272572,
+        "avg_efficiency_first_half": 108841.65316564622,
+        "avg_efficiency_second_half": 101056.5052380023,
+        "efficiency_variance": 488199.13565217075
+      },
+      "recommendations": [
+        {
+          "priority": "LOW",
+          "category": "Performance Optimization",
+          "recommendation": "Enable quantum-optimized batch processing for better resource utilization",
+          "potential_impact": "10-15% processing speed improvement"
+        }
+      ],
+      "performance_metrics": {
+        "scheduler_active": true,
+        "max_workers": 6,
+        "cache_stats": {
+          "size": 8,
+          "max_size": 5000,
+          "hit_count": 0,
+          "miss_count": 8,
+          "hit_ratio": 0.0,
+          "utilization": 0.0016
+        },
+        "adaptive_weights": {
+          "cpu": 0.4,
+          "memory": 0.3,
+          "io": 0.2,
+          "cache": 0.1
+        },
+        "task_metrics": {
+          "carbon_calculation_batch": {
+            "executions": 5,
+            "total_duration": 16.28589630126953,
+            "cache_hits": 5,
+            "avg_duration": 3.2571792602539062
+          },
+          "summary_stats": {
+            "executions": 1,
+            "total_duration": 16.5860652923584,
+            "cache_hits": 1,
+            "avg_duration": 16.5860652923584
+          },
+          "efficiency_analysis": {
+            "executions": 1,
+            "total_duration": 11.101722717285156,
+            "cache_hits": 1,
+            "avg_duration": 11.101722717285156
+          },
+          "optimization_recommendations": {
+            "executions": 1,
+            "total_duration": 5.713462829589844,
+            "cache_hits": 1,
+            "avg_duration": 5.713462829589844
+          },
+          "load_test_0": {
+            "executions": 1,
+            "total_duration": 6.060123443603516,
+            "cache_hits": 1,
+            "avg_duration": 6.060123443603516
+          },
+          "load_test_1": {
+            "executions": 1,
+            "total_duration": 5.891323089599609,
+            "cache_hits": 1,
+            "avg_duration": 5.891323089599609
+          },
+          "load_test_2": {
+            "executions": 1,
+            "total_duration": 5.85627555847168,
+            "cache_hits": 1,
+            "avg_duration": 5.85627555847168
+          },
+          "load_test_3": {
+            "executions": 1,
+            "total_duration": 4.912376403808594,
+            "cache_hits": 1,
+            "avg_duration": 4.912376403808594
+          },
+          "load_test_4": {
+            "executions": 1,
+            "total_duration": 4.834175109863281,
+            "cache_hits": 1,
+            "avg_duration": 4.834175109863281
+          },
+          "load_test_5": {
+            "executions": 1,
+            "total_duration": 4.801750183105469,
+            "cache_hits": 1,
+            "avg_duration": 4.801750183105469
+          },
+          "load_test_6": {
+            "executions": 1,
+            "total_duration": 3.7870407104492188,
+            "cache_hits": 1,
+            "avg_duration": 3.7870407104492188
+          },
+          "load_test_7": {
+            "executions": 1,
+            "total_duration": 3.705739974975586,
+            "cache_hits": 1,
+            "avg_duration": 3.705739974975586
+          },
+          "load_test_8": {
+            "executions": 1,
+            "total_duration": 3.6706924438476562,
+            "cache_hits": 1,
+            "avg_duration": 3.6706924438476562
+          },
+          "load_test_9": {
+            "executions": 1,
+            "total_duration": 3.0221939086914062,
+            "cache_hits": 1,
+            "avg_duration": 3.0221939086914062
+          },
+          "load_test_10": {
+            "executions": 1,
+            "total_duration": 2.939939498901367,
+            "cache_hits": 1,
+            "avg_duration": 2.939939498901367
+          },
+          "load_test_11": {
+            "executions": 1,
+            "total_duration": 2.8884410858154297,
+            "cache_hits": 1,
+            "avg_duration": 2.8884410858154297
+          },
+          "load_test_12": {
+            "executions": 1,
+            "total_duration": 2.2974014282226562,
+            "cache_hits": 1,
+            "avg_duration": 2.2974014282226562
+          },
+          "load_test_13": {
+            "executions": 1,
+            "total_duration": 2.074718475341797,
+            "cache_hits": 1,
+            "avg_duration": 2.074718475341797
+          },
+          "load_test_14": {
+            "executions": 1,
+            "total_duration": 2.0139217376708984,
+            "cache_hits": 1,
+            "avg_duration": 2.0139217376708984
+          },
+          "load_test_15": {
+            "executions": 1,
+            "total_duration": 1.9593238830566406,
+            "cache_hits": 1,
+            "avg_duration": 1.9593238830566406
+          },
+          "load_test_16": {
+            "executions": 1,
+            "total_duration": 1.9147396087646484,
+            "cache_hits": 1,
+            "avg_duration": 1.9147396087646484
+          },
+          "load_test_17": {
+            "executions": 1,
+            "total_duration": 1.8723011016845703,
+            "cache_hits": 1,
+            "avg_duration": 1.8723011016845703
+          },
+          "load_test_18": {
+            "executions": 1,
+            "total_duration": 1.8262863159179688,
+            "cache_hits": 1,
+            "avg_duration": 1.8262863159179688
+          },
+          "load_test_19": {
+            "executions": 1,
+            "total_duration": 1.7857551574707031,
+            "cache_hits": 1,
+            "avg_duration": 1.7857551574707031
+          }
+        },
+        "performance_history_length": 0
+      }
+    }
+  },
+  "auto_scaling": {
+    "scaling_events": [
+      {
+        "load": 0.2,
+        "queue_size": 5,
+        "capacity": 2,
+        "timestamp": 1754830084.6682787
+      },
+      {
+        "load": 0.5,
+        "queue_size": 15,
+        "capacity": 2,
+        "timestamp": 1754830084.7685497
+      },
+      {
+        "load": 0.9,
+        "queue_size": 45,
+        "capacity": 2,
+        "timestamp": 1754830084.8688557
+      },
+      {
+        "load": 0.95,
+        "queue_size": 60,
+        "capacity": 2,
+        "timestamp": 1754830084.969059
+      },
+      {
+        "load": 0.3,
+        "queue_size": 8,
+        "capacity": 2,
+        "timestamp": 1754830085.069281
+      },
+      {
+        "load": 0.1,
+        "queue_size": 2,
+        "capacity": 2,
+        "timestamp": 1754830085.1694732
+      }
+    ],
+    "final_capacity": 2,
+    "efficiency_factor": 0.856140350877193
+  },
+  "load_testing": {
+    "concurrent_tasks": 20,
+    "total_duration_seconds": 0.006462574005126953,
+    "avg_task_duration": 0.00032312870025634765,
+    "throughput_tasks_per_sec": 3094.742123515089,
+    "cache_hit_ratio": 0.0,
+    "sample_results": [
+      {
+        "task_name": "load_test_0",
+        "iterations": 208,
+        "result": 9329.466443740512,
+        "duration_seconds": 4.172325134277344e-05,
+        "cpu_efficiency": 4985229.897142857
+      },
+      {
+        "task_name": "load_test_1",
+        "iterations": 400,
+        "result": 28376.92658341124,
+        "duration_seconds": 8.654594421386719e-05,
+        "cpu_efficiency": 4621822.589531681
+      },
+      {
+        "task_name": "load_test_2",
+        "iterations": 595,
+        "result": 55332.34651153309,
+        "duration_seconds": 9.131431579589844e-05,
+        "cpu_efficiency": 6515955.300261097
+      }
+    ]
+  },
+  "scheduler_analytics": {
+    "scheduler_active": true,
+    "max_workers": 6,
+    "cache_stats": {
+      "size": 28,
+      "max_size": 5000,
+      "hit_count": 0,
+      "miss_count": 28,
+      "hit_ratio": 0.0,
+      "utilization": 0.0056
+    },
+    "adaptive_weights": {
+      "cpu": 0.4,
+      "memory": 0.3,
+      "io": 0.2,
+      "cache": 0.1
+    },
+    "task_metrics": {
+      "carbon_calculation_batch": {
+        "executions": 5,
+        "total_duration": 16.28589630126953,
+        "cache_hits": 5,
+        "avg_duration": 3.2571792602539062
+      },
+      "summary_stats": {
+        "executions": 1,
+        "total_duration": 16.5860652923584,
+        "cache_hits": 1,
+        "avg_duration": 16.5860652923584
+      },
+      "efficiency_analysis": {
+        "executions": 1,
+        "total_duration": 11.101722717285156,
+        "cache_hits": 1,
+        "avg_duration": 11.101722717285156
+      },
+      "optimization_recommendations": {
+        "executions": 1,
+        "total_duration": 5.713462829589844,
+        "cache_hits": 1,
+        "avg_duration": 5.713462829589844
+      },
+      "load_test_0": {
+        "executions": 1,
+        "total_duration": 6.060123443603516,
+        "cache_hits": 1,
+        "avg_duration": 6.060123443603516
+      },
+      "load_test_1": {
+        "executions": 1,
+        "total_duration": 5.891323089599609,
+        "cache_hits": 1,
+        "avg_duration": 5.891323089599609
+      },
+      "load_test_2": {
+        "executions": 1,
+        "total_duration": 5.85627555847168,
+        "cache_hits": 1,
+        "avg_duration": 5.85627555847168
+      },
+      "load_test_3": {
+        "executions": 1,
+        "total_duration": 4.912376403808594,
+        "cache_hits": 1,
+        "avg_duration": 4.912376403808594
+      },
+      "load_test_4": {
+        "executions": 1,
+        "total_duration": 4.834175109863281,
+        "cache_hits": 1,
+        "avg_duration": 4.834175109863281
+      },
+      "load_test_5": {
+        "executions": 1,
+        "total_duration": 4.801750183105469,
+        "cache_hits": 1,
+        "avg_duration": 4.801750183105469
+      },
+      "load_test_6": {
+        "executions": 1,
+        "total_duration": 3.7870407104492188,
+        "cache_hits": 1,
+        "avg_duration": 3.7870407104492188
+      },
+      "load_test_7": {
+        "executions": 1,
+        "total_duration": 3.705739974975586,
+        "cache_hits": 1,
+        "avg_duration": 3.705739974975586
+      },
+      "load_test_8": {
+        "executions": 1,
+        "total_duration": 3.6706924438476562,
+        "cache_hits": 1,
+        "avg_duration": 3.6706924438476562
+      },
+      "load_test_9": {
+        "executions": 1,
+        "total_duration": 3.0221939086914062,
+        "cache_hits": 1,
+        "avg_duration": 3.0221939086914062
+      },
+      "load_test_10": {
+        "executions": 1,
+        "total_duration": 2.939939498901367,
+        "cache_hits": 1,
+        "avg_duration": 2.939939498901367
+      },
+      "load_test_11": {
+        "executions": 1,
+        "total_duration": 2.8884410858154297,
+        "cache_hits": 1,
+        "avg_duration": 2.8884410858154297
+      },
+      "load_test_12": {
+        "executions": 1,
+        "total_duration": 2.2974014282226562,
+        "cache_hits": 1,
+        "avg_duration": 2.2974014282226562
+      },
+      "load_test_13": {
+        "executions": 1,
+        "total_duration": 2.074718475341797,
+        "cache_hits": 1,
+        "avg_duration": 2.074718475341797
+      },
+      "load_test_14": {
+        "executions": 1,
+        "total_duration": 2.0139217376708984,
+        "cache_hits": 1,
+        "avg_duration": 2.0139217376708984
+      },
+      "load_test_15": {
+        "executions": 1,
+        "total_duration": 1.9593238830566406,
+        "cache_hits": 1,
+        "avg_duration": 1.9593238830566406
+      },
+      "load_test_16": {
+        "executions": 1,
+        "total_duration": 1.9147396087646484,
+        "cache_hits": 1,
+        "avg_duration": 1.9147396087646484
+      },
+      "load_test_17": {
+        "executions": 1,
+        "total_duration": 1.8723011016845703,
+        "cache_hits": 1,
+        "avg_duration": 1.8723011016845703
+      },
+      "load_test_18": {
+        "executions": 1,
+        "total_duration": 1.8262863159179688,
+        "cache_hits": 1,
+        "avg_duration": 1.8262863159179688
+      },
+      "load_test_19": {
+        "executions": 1,
+        "total_duration": 1.7857551574707031,
+        "cache_hits": 1,
+        "avg_duration": 1.7857551574707031
+      }
+    },
+    "performance_history_length": 0
+  },
+  "scaling_analytics": {
+    "current_capacity": 2,
+    "min_capacity": 1,
+    "max_capacity": 4,
+    "recent_avg_load": 0.4916666666666667,
+    "predicted_load": 0.4416666666666667,
+    "efficiency_factor": 0.856140350877193,
+    "scaling_events": 1,
+    "load_history_length": 6
+  }
+}

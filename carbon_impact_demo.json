@@ -1,0 +1,35 @@
+{
+  "total_energy_kwh": 0.00012502273586061265,
+  "total_co2_kg": 3.0005456606547038e-05,
+  "total_duration_seconds": 4.500818490982056,
+  "metrics": [
+    {
+      "timestamp": 1754829744.3104594,
+      "energy_kwh": 4.1673925187852645e-05,
+      "co2_kg": 1.0001742045084634e-05,
+      "power_watts": 100.0,
+      "duration_seconds": 1.5002613067626953,
+      "samples_processed": 1000,
+      "gpu_utilization": 85.0
+    },
+    {
+      "timestamp": 1754829745.8108745,
+      "energy_kwh": 4.1674726539187964e-05,
+      "co2_kg": 1.0001934369405112e-05,
+      "power_watts": 100.0,
+      "duration_seconds": 1.5002901554107666,
+      "samples_processed": 1000,
+      "gpu_utilization": 85.0
+    },
+    {
+      "timestamp": 1754829747.3112297,
+      "energy_kwh": 4.167408413357205e-05,
+      "co2_kg": 1.0001780192057292e-05,
+      "power_watts": 100.0,
+      "duration_seconds": 1.5002670288085938,
+      "samples_processed": 1000,
+      "gpu_utilization": 85.0
+    }
+  ],
+  "generated_at": 1754829747.311388
+}

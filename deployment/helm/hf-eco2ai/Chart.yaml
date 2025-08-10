@@ -1,0 +1,17 @@
+apiVersion: v2
+name: hf-eco2ai
+description: A Helm chart for HF Eco2AI Plugin
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - hf-eco2ai
+  - carbon-tracking
+  - ml
+  - sustainability
+home: https://github.com/terragonlabs/hf-eco2ai-plugin
+sources:
+  - https://github.com/terragonlabs/hf-eco2ai-plugin
+maintainers:
+  - name: Daniel Schmidt
+    email: daniel@terragonlabs.com
