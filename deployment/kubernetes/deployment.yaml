@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hf-eco2ai
+  namespace: hf-eco2ai
+  labels:
+    app: hf-eco2ai
+    version: v0.1.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: hf-eco2ai
+  template:
+    metadata:
+      labels:
+        app: hf-eco2ai
+        version: v0.1.0
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: hf-eco2ai
+        image: hf-eco2ai:0.1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9091
+          name: metrics
+        env:
+        - name: HF_ECO2AI_ENV
+          value: "production"
+        - name: HF_ECO2AI_CONFIG_PATH
+          value: "/app/config"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+          readOnly: true
+        - name: data-volume
+          mountPath: /app/data
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: config-volume
+        configMap:
+          name: hf-eco2ai-config
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: hf-eco2ai-data
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      tolerations:
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 300

@@ -1,0 +1,168 @@
+{
+  "start_time": 1754829946.9812853,
+  "tests_performed": [
+    "config_management",
+    "error_handling",
+    "health_checks",
+    "alerting",
+    "monitoring"
+  ],
+  "health_checks": {
+    "test_component_0": {
+      "status": "HEALTHY",
+      "latency_ms": 0.11205673217773438
+    },
+    "test_component_1": {
+      "status": "HEALTHY",
+      "latency_ms": 0.05793571472167969
+    },
+    "test_component_2": {
+      "status": "HEALTHY",
+      "latency_ms": 0.05817413330078125
+    }
+  },
+  "alerts_generated": [
+    {
+      "severity": "MEDIUM",
+      "component": "demo_component",
+      "message": "Test alert for demonstration"
+    }
+  ],
+  "configurations_tested": [
+    "test_config"
+  ],
+  "resilience_tests": [
+    {
+      "test": "retry_mechanism",
+      "result": "passed"
+    }
+  ],
+  "end_time": 1754829947.9859943,
+  "duration_seconds": 1.004709005355835,
+  "monitoring_dashboard": {
+    "system_status": "HEALTHY",
+    "monitoring_active": true,
+    "total_alerts": 1,
+    "active_alerts": 1,
+    "critical_alerts": 0,
+    "health_checks": {
+      "config_system": "HEALTHY",
+      "monitoring_system": "HEALTHY",
+      "file_system": "HEALTHY",
+      "error_handling": "HEALTHY",
+      "test_component_0": "HEALTHY",
+      "test_component_1": "HEALTHY",
+      "test_component_2": "HEALTHY"
+    },
+    "recent_metrics": {
+      "system.cpu_usage": [
+        {
+          "timestamp": 1754829946.9806821,
+          "value": 45.0,
+          "tags": {
+            "unit": "percent"
+          }
+        }
+      ],
+      "system.memory_usage": [
+        {
+          "timestamp": 1754829946.9806867,
+          "value": 68.0,
+          "tags": {
+            "unit": "percent"
+          }
+        }
+      ],
+      "system.disk_usage": [
+        {
+          "timestamp": 1754829946.980689,
+          "value": 23.0,
+          "tags": {
+            "unit": "percent"
+          }
+        }
+      ],
+      "demo.cpu_usage": [
+        {
+          "timestamp": 1754829947.484631,
+          "value": 60,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.5849123,
+          "value": 62,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.685187,
+          "value": 64,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.7854683,
+          "value": 66,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.885791,
+          "value": 68,
+          "tags": {
+            "test": "demo"
+          }
+        }
+      ],
+      "demo.memory_usage": [
+        {
+          "timestamp": 1754829947.4846473,
+          "value": 67.5,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.584928,
+          "value": 69.0,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.6852024,
+          "value": 70.5,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.7855163,
+          "value": 72.0,
+          "tags": {
+            "test": "demo"
+          }
+        },
+        {
+          "timestamp": 1754829947.8858082,
+          "value": 73.5,
+          "tags": {
+            "test": "demo"
+          }
+        }
+      ]
+    },
+    "alert_summary": {
+      "CRITICAL": 0,
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 0,
+      "INFO": 0
+    }
+  }
+}
