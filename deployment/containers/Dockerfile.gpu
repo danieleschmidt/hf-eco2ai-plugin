@@ -1,7 +1,6 @@
-# Enterprise-grade multi-stage Dockerfile for HF Eco2AI Plugin
-# Optimized for security, performance, and production scalability
-# Stage 1: Build dependencies and compile
-FROM python:3.11-slim as builder
+# GPU-enabled production Dockerfile for HF Eco2AI Plugin
+# Optimized for CUDA environments and ML workloads
+FROM nvidia/cuda:12.1-devel-ubuntu22.04 as builder
 
 # Security updates and build dependencies
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
@@ -13,9 +12,17 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     pkg-config \
     libffi-dev \
     libssl-dev \
+    python3.11 \
+    python3.11-dev \
+    python3.11-distutils \
+    python3-pip \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
+
+# Create symlinks for python
+RUN ln -s /usr/bin/python3.11 /usr/bin/python && \
+    ln -s /usr/bin/python3.11 /usr/bin/python3
 
 # Create application user with restricted permissions
 RUN groupadd --gid 1001 app && \
@@ -27,6 +34,7 @@ WORKDIR /app
 # Install Python dependencies
 COPY requirements.txt pyproject.toml ./
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
@@ -37,7 +45,7 @@ COPY README.md LICENSE ./
 RUN pip install --no-cache-dir .
 
 # Stage 2: Production runtime
-FROM python:3.11-slim as production
+FROM nvidia/cuda:12.1-runtime-ubuntu22.04 as production
 
 # Security updates and minimal runtime dependencies
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
@@ -45,16 +53,22 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     curl \
     dumb-init \
     tini \
+    python3.11 \
+    python3.11-distutils \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get autoremove -y \
     && apt-get clean
+
+# Create symlinks for python
+RUN ln -s /usr/bin/python3.11 /usr/bin/python && \
+    ln -s /usr/bin/python3.11 /usr/bin/python3
 
 # Create application user with restricted permissions
 RUN groupadd --gid 1001 app && \
     useradd --uid 1001 --gid app --create-home --shell /bin/bash app
 
 # Copy installed packages from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/lib/python3.11/dist-packages /usr/local/lib/python3.11/dist-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Create application directories
@@ -69,6 +83,9 @@ USER app
 COPY --chown=app:app config/ ./config/
 COPY --chown=app:app scripts/entrypoint.sh ./entrypoint.sh
 
+# Make entrypoint executable
+RUN chmod +x ./entrypoint.sh
+
 # Expose port
 EXPOSE 8000
 
@@ -76,31 +93,35 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Set environment variables
+# Set environment variables for GPU
 ENV PYTHONPATH=/app \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    HF_ECO2AI_CONFIG_PATH=/app/config
-
-# Entry point
-ENTRYPOINT ["./entrypoint.sh"]
-CMD ["hf-eco2ai", "--serve", "--host", "0.0.0.0", "--port", "8000"]
+    HF_ECO2AI_CONFIG_PATH=/app/config \
+    CUDA_VISIBLE_DEVICES=all \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
 # Security hardening
-RUN chmod 750 /app && \
-    find /app -type f -exec chmod 640 {} \; && \
-    find /app -type d -exec chmod 750 {} \;
+RUN chmod 750 /app
+
+# Entry point with tini for proper signal handling
+ENTRYPOINT ["tini", "--", "./entrypoint.sh"]
+CMD ["hf-eco2ai", "--serve", "--host", "0.0.0.0", "--port", "8000", "--gpu"]
 
 # Labels for metadata and security scanning
 LABEL maintainer="enterprise@terragonlabs.com" \
       version="1.0.0" \
-      description="HF Eco2AI Plugin - Enterprise Production Container" \
-      org.opencontainers.image.title="hf-eco2ai-plugin" \
-      org.opencontainers.image.description="Enterprise-grade Hugging Face CO₂ tracking" \
+      description="HF Eco2AI Plugin - GPU Production Container" \
+      org.opencontainers.image.title="hf-eco2ai-plugin-gpu" \
+      org.opencontainers.image.description="GPU-enabled CO₂ tracking for ML workloads" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/terragonlabs/hf-eco2ai-plugin" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.vendor="TerragonLabs" \
       org.opencontainers.image.authors="enterprise@terragonlabs.com" \
       security.scan.enabled="true" \
-      security.hardened="true"
+      security.hardened="true" \
+      image.type="gpu" \
+      gpu.enabled="true" \
+      cuda.version="12.1"

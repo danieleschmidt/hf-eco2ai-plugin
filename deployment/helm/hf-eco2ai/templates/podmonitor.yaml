@@ -1,0 +1,70 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.prometheus.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "hf-eco2ai.fullname" . }}
+  labels:
+    {{- include "hf-eco2ai.labels" . | nindent 4 }}
+    monitoring: prometheus
+spec:
+  selector:
+    matchLabels:
+      {{- include "hf-eco2ai.selectorLabels" . | nindent 6 }}
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 15s
+      path: /metrics
+      honorLabels: true
+      scrapeTimeout: 10s
+      metricRelabelings:
+        # Carbon-specific metrics
+        - sourceLabels: [__name__]
+          regex: 'carbon_emissions_total'
+          targetLabel: __name__
+          replacement: 'hf_eco2ai_carbon_emissions_total'
+        - sourceLabels: [__name__]
+          regex: 'carbon_emissions_rate'
+          targetLabel: __name__
+          replacement: 'hf_eco2ai_carbon_emissions_rate'
+        - sourceLabels: [__name__]
+          regex: 'energy_consumption_total'
+          targetLabel: __name__
+          replacement: 'hf_eco2ai_energy_consumption_total'
+        
+        # Performance metrics
+        - sourceLabels: [__name__]
+          regex: 'request_duration_seconds'
+          targetLabel: __name__
+          replacement: 'hf_eco2ai_request_duration_seconds'
+        - sourceLabels: [__name__]
+          regex: 'requests_total'
+          targetLabel: __name__
+          replacement: 'hf_eco2ai_requests_total'
+        
+        # System metrics
+        - sourceLabels: [__name__]
+          regex: 'memory_usage_bytes'
+          targetLabel: __name__
+          replacement: 'hf_eco2ai_memory_usage_bytes'
+        - sourceLabels: [__name__]
+          regex: 'cpu_usage_percent'
+          targetLabel: __name__
+          replacement: 'hf_eco2ai_cpu_usage_percent'
+      
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: node
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: namespace
+        - sourceLabels: [__meta_kubernetes_pod_container_name]
+          targetLabel: container
+        - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_version]
+          targetLabel: version
+        - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+          targetLabel: component
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}

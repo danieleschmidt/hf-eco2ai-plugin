@@ -1,0 +1,54 @@
+# MANIFEST.in - PyPI package manifest for hf-eco2ai-plugin
+
+# Include essential documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CODE_OF_CONDUCT.md
+include CONTRIBUTING.md
+include SECURITY.md
+
+# Include project configuration files
+include pyproject.toml
+include tox.ini
+include pytest.ini
+include cliff.toml
+
+# Include deployment and configuration files
+recursive-include config *.json *.yaml *.yml
+recursive-include deployment *.yaml *.yml *.json *.tf *.sh *.md
+recursive-include docker *.yml *.yaml
+recursive-include scripts *.py *.sh
+
+# Include documentation
+recursive-include docs *.md *.rst *.py *.yml *.yaml
+recursive-include templates *.md *.yml *.yaml
+
+# Include source code and tests
+recursive-include src *.py *.typed *.json
+recursive-include tests *.py
+
+# Include benchmarks and examples
+recursive-include benchmarks *.py
+include *.py
+
+# Exclude unnecessary files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude .git*
+global-exclude .tox
+global-exclude .pytest_cache
+global-exclude .coverage
+global-exclude htmlcov
+global-exclude .DS_Store
+global-exclude *.egg-info
+global-exclude build
+global-exclude dist
+
+# Include type stubs
+include src/hf_eco2ai/py.typed
+
+# Include data files
+recursive-include src/hf_eco2ai/data *.json

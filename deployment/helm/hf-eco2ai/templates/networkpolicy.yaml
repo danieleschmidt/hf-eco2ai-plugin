@@ -1,0 +1,108 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "hf-eco2ai.fullname" . }}-network-policy
+  labels:
+    {{- include "hf-eco2ai.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "hf-eco2ai.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  
+  {{- if .Values.networkPolicy.ingress.enabled }}
+  ingress:
+    # Allow ingress from specified namespaces
+    {{- range .Values.networkPolicy.ingress.allowedNamespaces }}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: {{ . }}
+    {{- end }}
+    
+    # Allow ingress from same namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: {{ .Release.Namespace }}
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 9091
+    
+    # Allow health checks from Kubernetes
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 8000
+          endPort: 8000
+  {{- end }}
+  
+  {{- if .Values.networkPolicy.egress.enabled }}
+  egress:
+    # Allow egress to DNS
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    
+    # Allow egress to specified destinations
+    {{- range .Values.networkPolicy.egress.allowedDestinations }}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: {{ . }}
+    {{- end }}
+    
+    # Allow egress for Redis
+    {{- if .Values.redis.enabled }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    {{- end }}
+    
+    # Allow egress for PostgreSQL
+    {{- if .Values.postgresql.enabled }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: postgresql
+      ports:
+        - protocol: TCP
+          port: 5432
+    {{- end }}
+    
+    # Allow egress to monitoring services
+    {{- if .Values.monitoring.enabled }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090
+    {{- end }}
+    
+    # Allow HTTPS egress for external APIs
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+    
+    # Allow HTTP egress for health checks
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+  {{- end }}
+{{- end }}

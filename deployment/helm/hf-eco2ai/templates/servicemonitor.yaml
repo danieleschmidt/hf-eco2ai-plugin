@@ -1,0 +1,40 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.prometheus.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hf-eco2ai.fullname" . }}
+  labels:
+    {{- include "hf-eco2ai.labels" . | nindent 4 }}
+    monitoring: prometheus
+spec:
+  selector:
+    matchLabels:
+      {{- include "hf-eco2ai.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      interval: 15s
+      path: /metrics
+      honorLabels: true
+      scrapeTimeout: 10s
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: 'hf_eco2ai_.*'
+          targetLabel: __name__
+          replacement: '${1}'
+        - sourceLabels: [__name__]
+          regex: 'carbon_.*'
+          targetLabel: __name__
+          replacement: '${1}'
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: node
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: namespace
+        - sourceLabels: [__meta_kubernetes_service_name]
+          targetLabel: service
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}

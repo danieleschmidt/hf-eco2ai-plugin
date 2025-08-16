@@ -1,25 +1,22 @@
-# Enterprise-grade multi-stage Dockerfile for HF Eco2AI Plugin
-# Optimized for security, performance, and production scalability
-# Stage 1: Build dependencies and compile
-FROM python:3.11-slim as builder
+# Alpine-based lightweight production Dockerfile for HF Eco2AI Plugin
+# Optimized for minimal size and maximum security
+FROM python:3.11-alpine as builder
 
 # Security updates and build dependencies
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    build-essential \
+RUN apk update && apk upgrade && apk add --no-cache \
+    build-base \
     curl \
     git \
     gcc \
     g++ \
-    pkg-config \
+    musl-dev \
     libffi-dev \
-    libssl-dev \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    openssl-dev \
+    pkgconfig
 
 # Create application user with restricted permissions
-RUN groupadd --gid 1001 app && \
-    useradd --uid 1001 --gid app --create-home --shell /bin/bash app
+RUN addgroup -g 1001 app && \
+    adduser -u 1001 -G app -h /home/app -s /bin/sh -D app
 
 # Set working directory
 WORKDIR /app
@@ -37,21 +34,19 @@ COPY README.md LICENSE ./
 RUN pip install --no-cache-dir .
 
 # Stage 2: Production runtime
-FROM python:3.11-slim as production
+FROM python:3.11-alpine as production
 
 # Security updates and minimal runtime dependencies
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+RUN apk update && apk upgrade && apk add --no-cache \
     ca-certificates \
     curl \
     dumb-init \
     tini \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get autoremove -y \
-    && apt-get clean
+    && rm -rf /var/cache/apk/*
 
 # Create application user with restricted permissions
-RUN groupadd --gid 1001 app && \
-    useradd --uid 1001 --gid app --create-home --shell /bin/bash app
+RUN addgroup -g 1001 app && \
+    adduser -u 1001 -G app -h /home/app -s /bin/sh -D app
 
 # Copy installed packages from builder
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
@@ -69,6 +64,9 @@ USER app
 COPY --chown=app:app config/ ./config/
 COPY --chown=app:app scripts/entrypoint.sh ./entrypoint.sh
 
+# Make entrypoint executable
+RUN chmod +x ./entrypoint.sh
+
 # Expose port
 EXPOSE 8000
 
@@ -82,25 +80,24 @@ ENV PYTHONPATH=/app \
     PYTHONDONTWRITEBYTECODE=1 \
     HF_ECO2AI_CONFIG_PATH=/app/config
 
-# Entry point
-ENTRYPOINT ["./entrypoint.sh"]
-CMD ["hf-eco2ai", "--serve", "--host", "0.0.0.0", "--port", "8000"]
-
 # Security hardening
-RUN chmod 750 /app && \
-    find /app -type f -exec chmod 640 {} \; && \
-    find /app -type d -exec chmod 750 {} \;
+RUN chmod 750 /app
+
+# Entry point with tini for proper signal handling
+ENTRYPOINT ["tini", "--", "./entrypoint.sh"]
+CMD ["hf-eco2ai", "--serve", "--host", "0.0.0.0", "--port", "8000"]
 
 # Labels for metadata and security scanning
 LABEL maintainer="enterprise@terragonlabs.com" \
       version="1.0.0" \
-      description="HF Eco2AI Plugin - Enterprise Production Container" \
-      org.opencontainers.image.title="hf-eco2ai-plugin" \
-      org.opencontainers.image.description="Enterprise-grade Hugging Face CO₂ tracking" \
+      description="HF Eco2AI Plugin - Alpine Production Container" \
+      org.opencontainers.image.title="hf-eco2ai-plugin-alpine" \
+      org.opencontainers.image.description="Lightweight Alpine-based CO₂ tracking" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.source="https://github.com/terragonlabs/hf-eco2ai-plugin" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.vendor="TerragonLabs" \
       org.opencontainers.image.authors="enterprise@terragonlabs.com" \
       security.scan.enabled="true" \
-      security.hardened="true"
+      security.hardened="true" \
+      image.type="alpine"

@@ -1,11 +1,32 @@
-# Default values for hf-eco2ai
+# Enterprise Production values for hf-eco2ai
+# Comprehensive configuration for production deployment with monitoring and scalability
 
+# Global configuration
+global:
+  imageRegistry: docker.io
+  imagePullSecrets:
+    - name: regcred
+  storageClass: fast-ssd
+  
+# Application configuration
 replicaCount: 3
 
 image:
-  repository: hf-eco2ai
-  pullPolicy: Always
-  tag: "0.1.0"
+  registry: docker.io
+  repository: terragonlabs/hf-eco2ai
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+  
+# Additional images
+images:
+  alpine:
+    registry: docker.io
+    repository: terragonlabs/hf-eco2ai-alpine
+    tag: "1.0.0"
+  gpu:
+    registry: docker.io
+    repository: terragonlabs/hf-eco2ai-gpu
+    tag: "1.0.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -21,18 +42,28 @@ podAnnotations:
   prometheus.io/port: "9091"
   prometheus.io/path: "/metrics"
 
+# Enhanced security configuration
 podSecurityContext:
   runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+  seccompProfile:
+    type: RuntimeDefault
 
 securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
   capabilities:
     drop:
     - ALL
+    add:
+    - NET_BIND_SERVICE
+  seccompProfile:
+    type: RuntimeDefault
 
 service:
   type: ClusterIP
@@ -94,15 +125,36 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
 
+# Application configuration
 config:
   environment: production
   logLevel: INFO
+  debug: false
   monitoring:
     enabled: true
     prometheusPort: 9091
+    healthCheckPath: /health
+    readinessPath: /ready
+    livenessPath: /live
   carbonTracking:
     gridCarbonIntensity: 240.0
     realTimeUpdates: true
+    batchSize: 1000
+    flushInterval: 30s
+  security:
+    enableTLS: true
+    certificateSecret: hf-eco2ai-tls
+    authenticationEnabled: true
+  performance:
+    maxConcurrentRequests: 1000
+    requestTimeout: 30s
+    enableCaching: true
+    cacheSize: 1000
+  features:
+    quantumOptimization: true
+    distributedProcessing: true
+    enterpriseHub: true
+    advancedAnalytics: true
 
 postgresql:
   enabled: true
@@ -128,9 +180,166 @@ redis:
       enabled: true
       size: 5Gi
 
+# Comprehensive monitoring stack
 monitoring:
+  enabled: true
   prometheus:
     enabled: true
+    retention: 90d
+    storageSize: 50Gi
+    resources:
+      requests:
+        memory: 2Gi
+        cpu: 500m
+      limits:
+        memory: 4Gi
+        cpu: 2
   grafana:
     enabled: true
     adminPassword: "changeme"
+    storageSize: 10Gi
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 250m
+      limits:
+        memory: 1Gi
+        cpu: 500m
+    dashboards:
+      carbonTracking: true
+      performance: true
+      security: true
+      business: true
+  alertmanager:
+    enabled: true
+    retention: 720h
+    storageSize: 5Gi
+  jaeger:
+    enabled: true
+    tracing:
+      enabled: true
+      samplingRate: 0.1
+  elasticsearch:
+    enabled: false
+    storageSize: 100Gi
+
+# Environment-specific configurations
+environments:
+  development:
+    replicaCount: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    monitoring:
+      retention: 7d
+  staging:
+    replicaCount: 2
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 2Gi
+    monitoring:
+      retention: 30d
+  production:
+    replicaCount: 3
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2
+        memory: 4Gi
+    monitoring:
+      retention: 90d
+
+# Multi-cloud and hybrid deployment
+cloudProvider:
+  aws:
+    enabled: false
+    region: us-west-2
+    storageClass: gp3
+    loadBalancer:
+      type: nlb
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  gcp:
+    enabled: false
+    region: us-central1
+    storageClass: pd-ssd
+    loadBalancer:
+      type: external
+  azure:
+    enabled: false
+    region: eastus
+    storageClass: managed-premium
+    loadBalancer:
+      type: internal
+
+# Backup and disaster recovery
+backup:
+  enabled: true
+  schedule: "0 2 * * *"
+  retention: 30
+  storage:
+    size: 100Gi
+    storageClass: backup-storage
+  destinations:
+    s3:
+      enabled: false
+      bucket: hf-eco2ai-backups
+      region: us-west-2
+    gcs:
+      enabled: false
+      bucket: hf-eco2ai-backups
+    azure:
+      enabled: false
+      container: hf-eco2ai-backups
+
+# Network policies and security
+networkPolicy:
+  enabled: true
+  ingress:
+    enabled: true
+    allowedNamespaces:
+      - monitoring
+      - ingress-nginx
+  egress:
+    enabled: true
+    allowedDestinations:
+      - monitoring
+      - kube-system
+
+# Resource quotas and limits
+resourceQuota:
+  enabled: true
+  hard:
+    requests.cpu: "10"
+    requests.memory: 20Gi
+    limits.cpu: "20"
+    limits.memory: 40Gi
+    persistentvolumeclaims: "10"
+
+# Advanced features
+features:
+  quantumOptimization:
+    enabled: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  distributedProcessing:
+    enabled: true
+    workerCount: 3
+  enterpriseHub:
+    enabled: true
+    apiKey: ""
+  aiEnhancement:
+    enabled: true
+    modelSize: large
