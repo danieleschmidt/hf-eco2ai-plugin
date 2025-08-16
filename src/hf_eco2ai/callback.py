@@ -1,12 +1,43 @@
-"""Main Hugging Face Trainer callback for carbon tracking."""
+"""Main Hugging Face Trainer callback for carbon tracking with multi-modal support."""
 
 import time
 import logging
-from typing import Dict, Optional, Any, List
+from typing import Dict, Optional, Any, List, Union, Tuple
 import uuid
 from pathlib import Path
+import inspect
+import json
+from enum import Enum
+from dataclasses import dataclass
 
 from transformers import TrainerCallback, TrainerState, TrainerControl, TrainingArguments
+
+# Multi-modal support imports with fallbacks
+try:
+    import torch
+    import torch.nn as nn
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+
+try:
+    from transformers import AutoProcessor, AutoModel
+    TRANSFORMERS_PROCESSORS_AVAILABLE = True
+except ImportError:
+    TRANSFORMERS_PROCESSORS_AVAILABLE = False
+
+try:
+    import librosa
+    AUDIO_SUPPORT = True
+except ImportError:
+    AUDIO_SUPPORT = False
+
+try:
+    from PIL import Image
+    import torchvision.transforms as transforms
+    VISION_SUPPORT = True
+except ImportError:
+    VISION_SUPPORT = False
 
 from .config import CarbonConfig
 from .models import CarbonMetrics, CarbonReport, CarbonSummary, EnvironmentalImpact
@@ -18,6 +49,294 @@ from .health_monitor import get_health_monitor, start_health_monitoring
 from .performance_optimizer import get_performance_optimizer, optimized, start_performance_optimization
 
 logger = logging.getLogger(__name__)
+
+
+class ModalityType(Enum):
+    """Types of modalities supported for carbon tracking."""
+    TEXT = "text"
+    VISION = "vision"
+    AUDIO = "audio"
+    VIDEO = "video"
+    MULTIMODAL = "multimodal"
+    UNKNOWN = "unknown"
+
+
+@dataclass
+class ModalityMetrics:
+    """Metrics specific to a modality type."""
+    modality: ModalityType
+    input_size_mb: float = 0.0
+    processing_time_ms: float = 0.0
+    memory_usage_mb: float = 0.0
+    compute_ops: int = 0  # Estimated compute operations
+    carbon_intensity_factor: float = 1.0  # Modality-specific carbon factor
+
+
+@dataclass
+class MultiModalTrainingProfile:
+    """Profile for multi-modal training session."""
+    primary_modality: ModalityType
+    secondary_modalities: List[ModalityType]
+    modality_mix_ratio: Dict[str, float]  # Percentage of each modality
+    estimated_complexity_factor: float = 1.0
+    specialized_hardware_requirements: List[str] = None
+    
+
+class ModalityDetector:
+    """Detect and analyze modalities in training data and models."""
+    
+    def __init__(self):
+        self.modality_patterns = {
+            # Model architecture patterns
+            "vision": ["vit", "clip", "blip", "resnet", "efficientnet", "convnext", "deit"],
+            "audio": ["wav2vec", "whisper", "hubert", "speech", "audio", "mfcc"],
+            "text": ["bert", "gpt", "t5", "roberta", "electra", "deberta"],
+            "multimodal": ["clip", "blip", "layoutlm", "flamingo", "dall-e", "stable-diffusion"]
+        }
+        
+        self.complexity_factors = {
+            ModalityType.TEXT: 1.0,
+            ModalityType.VISION: 2.5,
+            ModalityType.AUDIO: 1.8,
+            ModalityType.VIDEO: 4.0,
+            ModalityType.MULTIMODAL: 3.2
+        }
+    
+    def detect_model_modality(self, model) -> Tuple[ModalityType, float]:
+        """Detect the primary modality of a model and its complexity factor."""
+        if not TORCH_AVAILABLE or model is None:
+            return ModalityType.UNKNOWN, 1.0
+        
+        model_name = model.__class__.__name__.lower()
+        model_config = getattr(model, 'config', None)
+        
+        # Check model architecture name patterns
+        for modality, patterns in self.modality_patterns.items():
+            for pattern in patterns:
+                if pattern in model_name:
+                    modality_enum = ModalityType(modality)
+                    return modality_enum, self.complexity_factors.get(modality_enum, 1.0)
+        
+        # Check model configuration for modality hints
+        if model_config:
+            config_dict = model_config.to_dict() if hasattr(model_config, 'to_dict') else {}
+            
+            # Vision models often have image_size or patch_size
+            if any(key in config_dict for key in ['image_size', 'patch_size', 'num_channels']):
+                return ModalityType.VISION, self.complexity_factors[ModalityType.VISION]
+            
+            # Audio models often have these parameters
+            if any(key in config_dict for key in ['sample_rate', 'num_mel_bins', 'feature_size']):
+                return ModalityType.AUDIO, self.complexity_factors[ModalityType.AUDIO]
+            
+            # Multi-modal models
+            if any(key in config_dict for key in ['vision_config', 'text_config', 'cross_attention']):
+                return ModalityType.MULTIMODAL, self.complexity_factors[ModalityType.MULTIMODAL]
+        
+        # Default to text for transformer models
+        if hasattr(model, 'embeddings') or 'transformer' in model_name:
+            return ModalityType.TEXT, self.complexity_factors[ModalityType.TEXT]
+        
+        return ModalityType.UNKNOWN, 1.0
+    
+    def analyze_data_modality(self, data_sample: Any) -> ModalityMetrics:
+        """Analyze a data sample to determine its modality characteristics."""
+        if not TORCH_AVAILABLE:
+            return ModalityMetrics(ModalityType.UNKNOWN)
+        
+        # Analyze based on data structure
+        if isinstance(data_sample, dict):
+            # Multi-modal data often comes as dictionaries
+            modalities = []
+            total_size = 0
+            
+            for key, value in data_sample.items():
+                if 'image' in key.lower() or 'pixel' in key.lower():
+                    modalities.append(ModalityType.VISION)
+                    if torch.is_tensor(value):
+                        total_size += value.numel() * value.element_size()
+                elif 'audio' in key.lower() or 'speech' in key.lower():
+                    modalities.append(ModalityType.AUDIO)
+                    if torch.is_tensor(value):
+                        total_size += value.numel() * value.element_size()
+                elif 'text' in key.lower() or 'input_ids' in key.lower():
+                    modalities.append(ModalityType.TEXT)
+                    if torch.is_tensor(value):
+                        total_size += value.numel() * value.element_size()
+            
+            if len(modalities) > 1:
+                primary_modality = ModalityType.MULTIMODAL
+            elif modalities:
+                primary_modality = modalities[0]
+            else:
+                primary_modality = ModalityType.UNKNOWN
+            
+            return ModalityMetrics(
+                modality=primary_modality,
+                input_size_mb=total_size / (1024 * 1024),
+                carbon_intensity_factor=self.complexity_factors.get(primary_modality, 1.0)
+            )
+        
+        elif torch.is_tensor(data_sample):
+            # Analyze tensor dimensions to infer modality
+            shape = data_sample.shape
+            size_mb = data_sample.numel() * data_sample.element_size() / (1024 * 1024)
+            
+            if len(shape) == 4 and shape[1] in [1, 3, 4]:  # Likely images (B, C, H, W)
+                return ModalityMetrics(
+                    modality=ModalityType.VISION,
+                    input_size_mb=size_mb,
+                    carbon_intensity_factor=self.complexity_factors[ModalityType.VISION]
+                )
+            elif len(shape) == 3 and shape[-1] > 1000:  # Likely audio (B, T, F)
+                return ModalityMetrics(
+                    modality=ModalityType.AUDIO,
+                    input_size_mb=size_mb,
+                    carbon_intensity_factor=self.complexity_factors[ModalityType.AUDIO]
+                )
+            elif len(shape) == 2:  # Likely text tokens (B, L)
+                return ModalityMetrics(
+                    modality=ModalityType.TEXT,
+                    input_size_mb=size_mb,
+                    carbon_intensity_factor=self.complexity_factors[ModalityType.TEXT]
+                )
+        
+        return ModalityMetrics(ModalityType.UNKNOWN)
+
+
+class MultiModalCarbonTracker:
+    """Specialized carbon tracking for multi-modal training."""
+    
+    def __init__(self, modality_detector: ModalityDetector):
+        self.modality_detector = modality_detector
+        self.modality_metrics_history: Dict[str, List[ModalityMetrics]] = {}
+        self.training_profile: Optional[MultiModalTrainingProfile] = None
+        
+        # Benchmarks for efficiency comparison
+        self.efficiency_benchmarks = {
+            ModalityType.TEXT: {"samples_per_kwh": 50000, "co2_per_sample": 0.00001},
+            ModalityType.VISION: {"samples_per_kwh": 5000, "co2_per_sample": 0.0001},
+            ModalityType.AUDIO: {"samples_per_kwh": 8000, "co2_per_sample": 0.00005},
+            ModalityType.MULTIMODAL: {"samples_per_kwh": 2000, "co2_per_sample": 0.0002}
+        }
+    
+    def create_training_profile(self, model, sample_data=None) -> MultiModalTrainingProfile:
+        """Create a training profile based on model and data analysis."""
+        primary_modality, complexity_factor = self.modality_detector.detect_model_modality(model)
+        
+        secondary_modalities = []
+        modality_mix = {primary_modality.value: 1.0}
+        
+        # Analyze sample data if available
+        if sample_data:
+            data_modality = self.modality_detector.analyze_data_modality(sample_data)
+            if data_modality.modality != primary_modality and data_modality.modality != ModalityType.UNKNOWN:
+                secondary_modalities.append(data_modality.modality)
+                modality_mix[data_modality.modality.value] = 0.5
+                modality_mix[primary_modality.value] = 0.5
+        
+        # Determine specialized hardware requirements
+        hardware_reqs = []
+        if primary_modality in [ModalityType.VISION, ModalityType.VIDEO]:
+            hardware_reqs.extend(["high_memory_gpu", "tensor_cores"])
+        if primary_modality == ModalityType.AUDIO:
+            hardware_reqs.extend(["streaming_capable"])
+        if primary_modality == ModalityType.MULTIMODAL:
+            hardware_reqs.extend(["high_memory_gpu", "fast_interconnect", "large_cache"])
+        
+        self.training_profile = MultiModalTrainingProfile(
+            primary_modality=primary_modality,
+            secondary_modalities=secondary_modalities,
+            modality_mix_ratio=modality_mix,
+            estimated_complexity_factor=complexity_factor,
+            specialized_hardware_requirements=hardware_reqs
+        )
+        
+        logger.info(f"Created multi-modal training profile: {primary_modality.value} (complexity: {complexity_factor:.2f}x)")
+        return self.training_profile
+    
+    def track_modality_efficiency(self, modality: ModalityType, energy_kwh: float, 
+                                samples_processed: int) -> Dict[str, float]:
+        """Track efficiency metrics for a specific modality."""
+        if samples_processed <= 0 or energy_kwh <= 0:
+            return {}
+        
+        samples_per_kwh = samples_processed / energy_kwh
+        energy_per_sample = energy_kwh / samples_processed
+        
+        # Compare to benchmarks
+        benchmark = self.efficiency_benchmarks.get(modality, {})
+        benchmark_samples_per_kwh = benchmark.get("samples_per_kwh", 1)
+        
+        efficiency_percentile = min(100, (samples_per_kwh / benchmark_samples_per_kwh) * 100)
+        
+        return {
+            "modality": modality.value,
+            "samples_per_kwh": samples_per_kwh,
+            "energy_per_sample": energy_per_sample,
+            "efficiency_percentile": efficiency_percentile,
+            "vs_benchmark_ratio": samples_per_kwh / benchmark_samples_per_kwh,
+            "benchmark_samples_per_kwh": benchmark_samples_per_kwh
+        }
+    
+    def get_modality_recommendations(self) -> List[Dict[str, Any]]:
+        """Generate modality-specific optimization recommendations."""
+        if not self.training_profile:
+            return []
+        
+        recommendations = []
+        primary_modality = self.training_profile.primary_modality
+        
+        # Modality-specific recommendations
+        if primary_modality == ModalityType.VISION:
+            recommendations.extend([
+                {
+                    "category": "data_preprocessing",
+                    "description": "Consider image resizing/cropping to reduce input size",
+                    "potential_savings": "10-30% energy reduction",
+                    "implementation": "Adjust image preprocessing pipeline"
+                },
+                {
+                    "category": "model_optimization",
+                    "description": "Use mixed precision training for vision models",
+                    "potential_savings": "20-40% memory and energy reduction",
+                    "implementation": "Enable fp16 or bf16 training"
+                }
+            ])
+        
+        elif primary_modality == ModalityType.AUDIO:
+            recommendations.extend([
+                {
+                    "category": "data_preprocessing", 
+                    "description": "Optimize audio feature extraction (MFCC, spectrograms)",
+                    "potential_savings": "15-25% preprocessing energy reduction",
+                    "implementation": "Pre-compute and cache audio features"
+                },
+                {
+                    "category": "batch_processing",
+                    "description": "Use dynamic batching for variable-length audio",
+                    "potential_savings": "5-15% efficiency improvement",
+                    "implementation": "Implement padding-aware batching"
+                }
+            ])
+        
+        elif primary_modality == ModalityType.MULTIMODAL:
+            recommendations.extend([
+                {
+                    "category": "cross_modal_optimization",
+                    "description": "Balance compute between modalities",
+                    "potential_savings": "10-20% overall efficiency improvement",
+                    "implementation": "Analyze and optimize cross-attention patterns"
+                },
+                {
+                    "category": "data_pipeline",
+                    "description": "Optimize multi-modal data loading and preprocessing",
+                    "potential_savings": "15-30% pipeline efficiency improvement",
+                    "implementation": "Parallel preprocessing for different modalities"
+                }
+            ])
+        
+        return recommendations
 
 
 class Eco2AICallback(TrainerCallback):
@@ -55,6 +374,12 @@ class Eco2AICallback(TrainerCallback):
         self.validator = DataValidator()
         self.health_monitor = get_health_monitor()
         self.performance_optimizer = get_performance_optimizer()
+        
+        # Initialize multi-modal support
+        self.modality_detector = ModalityDetector()
+        self.multimodal_tracker = MultiModalCarbonTracker(self.modality_detector)
+        self.training_profile: Optional[MultiModalTrainingProfile] = None
+        self.modality_metrics: Dict[str, List[float]] = {}
         
         # Start health monitoring if not already started
         if hasattr(self.config, 'enable_health_monitoring') and self.config.enable_health_monitoring:
@@ -185,18 +510,40 @@ class Eco2AICallback(TrainerCallback):
             "training_args": args.to_dict(),
         })
         
-        # Count model parameters
+        # Count model parameters and analyze modality
         if model is not None:
             try:
                 total_params = sum(p.numel() for p in model.parameters())
                 trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+                
+                # Multi-modal analysis
+                self.training_profile = self.multimodal_tracker.create_training_profile(model)
+                modality_adjustments = self.multimodal_tracker.get_modality_recommendations()
+                
                 self.carbon_report.training_metadata.update({
                     "model_parameters": total_params,
                     "trainable_parameters": trainable_params,
+                    "primary_modality": self.training_profile.primary_modality.value,
+                    "secondary_modalities": [m.value for m in self.training_profile.secondary_modalities],
+                    "complexity_factor": self.training_profile.estimated_complexity_factor,
+                    "specialized_hardware": self.training_profile.specialized_hardware_requirements,
+                    "modality_recommendations": modality_adjustments
                 })
                 self.carbon_report.summary.model_parameters = total_params
+                
+                logger.info(f"Detected {self.training_profile.primary_modality.value} model with {total_params:,} parameters")
+                if modality_adjustments:
+                    logger.info(f"Generated {len(modality_adjustments)} modality-specific optimization recommendations")
+                    
             except Exception as e:
-                logger.warning(f"Could not count model parameters: {e}")
+                logger.warning(f"Could not analyze model: {e}")
+                # Fallback to basic parameter counting
+                try:
+                    total_params = sum(p.numel() for p in model.parameters())
+                    self.carbon_report.training_metadata.update({"model_parameters": total_params})
+                    self.carbon_report.summary.model_parameters = total_params
+                except Exception:
+                    pass
         
         # Set up system metadata
         import platform
@@ -306,6 +653,21 @@ class Eco2AICallback(TrainerCallback):
         
         # Get efficiency metrics
         efficiency = self.energy_tracker.get_efficiency_metrics(self._samples_processed)
+        
+        # Multi-modal efficiency tracking
+        modality_efficiency = {}
+        if self.training_profile:
+            modality_efficiency = self.multimodal_tracker.track_modality_efficiency(
+                self.training_profile.primary_modality, energy, self._samples_processed
+            )
+            
+            # Store modality metrics for trending
+            modality_key = self.training_profile.primary_modality.value
+            if modality_key not in self.modality_metrics:
+                self.modality_metrics[modality_key] = []
+            
+            if "efficiency_percentile" in modality_efficiency:
+                self.modality_metrics[modality_key].append(modality_efficiency["efficiency_percentile"])
         
         # Create metric record
         metric = CarbonMetrics(
@@ -452,6 +814,63 @@ class Eco2AICallback(TrainerCallback):
         """
         self._finalize_report()
         return self.carbon_report
+    
+    def get_modality_analytics(self) -> Dict[str, Any]:
+        """Get comprehensive multi-modal training analytics."""
+        if not self.training_profile:
+            return {"error": "No modality profile available"}
+        
+        analytics = {
+            "training_profile": {
+                "primary_modality": self.training_profile.primary_modality.value,
+                "secondary_modalities": [m.value for m in self.training_profile.secondary_modalities],
+                "modality_mix_ratio": self.training_profile.modality_mix_ratio,
+                "complexity_factor": self.training_profile.estimated_complexity_factor,
+                "hardware_requirements": self.training_profile.specialized_hardware_requirements
+            },
+            "efficiency_trends": self.modality_metrics,
+            "recommendations": self.multimodal_tracker.get_modality_recommendations()
+        }
+        
+        # Add current efficiency comparison
+        if self._samples_processed > 0:
+            _, energy, _ = self.energy_tracker.get_current_consumption()
+            current_efficiency = self.multimodal_tracker.track_modality_efficiency(
+                self.training_profile.primary_modality, energy, self._samples_processed
+            )
+            analytics["current_efficiency"] = current_efficiency
+        
+        return analytics
+    
+    def get_modality_leaderboard_position(self) -> Dict[str, Union[float, str]]:
+        """Get position on modality-specific efficiency leaderboard."""
+        if not self.training_profile or self._samples_processed <= 0:
+            return {"error": "Insufficient data for leaderboard position"}
+        
+        _, energy, _ = self.energy_tracker.get_current_consumption()
+        efficiency_metrics = self.multimodal_tracker.track_modality_efficiency(
+            self.training_profile.primary_modality, energy, self._samples_processed
+        )
+        
+        return {
+            "modality": self.training_profile.primary_modality.value,
+            "efficiency_percentile": efficiency_metrics.get("efficiency_percentile", 0),
+            "vs_benchmark_ratio": efficiency_metrics.get("vs_benchmark_ratio", 0),
+            "leaderboard_tier": self._get_efficiency_tier(efficiency_metrics.get("efficiency_percentile", 0))
+        }
+    
+    def _get_efficiency_tier(self, percentile: float) -> str:
+        """Determine efficiency tier based on percentile."""
+        if percentile >= 90:
+            return "Elite"
+        elif percentile >= 75:
+            return "Advanced"
+        elif percentile >= 50:
+            return "Intermediate"
+        elif percentile >= 25:
+            return "Beginner"
+        else:
+            return "Needs Improvement"
     
     @property
     def carbon_summary(self) -> str:

@@ -1,0 +1,435 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "HF Eco2AI - Production Dashboard",
+    "tags": ["hf-eco2ai", "carbon-tracking", "ml-platform"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "30s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"
+      ]
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "namespace",
+          "type": "query",
+          "query": "label_values(hf_eco2ai_requests_total, namespace)",
+          "refresh": 1,
+          "includeAll": false,
+          "allValue": "",
+          "current": {
+            "value": "production",
+            "text": "production"
+          }
+        },
+        {
+          "name": "instance",
+          "type": "query",
+          "query": "label_values(hf_eco2ai_requests_total{namespace=\"$namespace\"}, instance)",
+          "refresh": 1,
+          "includeAll": true,
+          "allValue": ".*",
+          "multi": true
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Overview",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "up{job=\"hf-eco2ai\", namespace=\"$namespace\"}",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Request Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "sum(rate(hf_eco2ai_requests_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) by (status)",
+            "legendFormat": "{{status}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests/sec",
+            "min": 0
+          }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "current": true
+        }
+      },
+      {
+        "id": 3,
+        "title": "Error Rate",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(rate(hf_eco2ai_requests_total{namespace=\"$namespace\", instance=~\"$instance\", status=~\"5..\"}[5m])) / sum(rate(hf_eco2ai_requests_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) * 100",
+            "legendFormat": "Error Rate %"
+          }
+        ],
+        "valueName": "current",
+        "format": "percent",
+        "thresholds": "2,5",
+        "colorBackground": true,
+        "colors": ["green", "yellow", "red"]
+      },
+      {
+        "id": 4,
+        "title": "Response Time (95th percentile)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(hf_eco2ai_request_duration_seconds_bucket{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) by (le))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, sum(rate(hf_eco2ai_request_duration_seconds_bucket{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) by (le))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Carbon Emissions Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "sum(rate(hf_eco2ai_carbon_emissions_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) * 3600",
+            "legendFormat": "g CO2/hour"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "g CO2/hour",
+            "min": 0
+          }
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [1000],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "last"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "10s",
+          "handler": 1,
+          "name": "High Carbon Emissions",
+          "noDataState": "no_data",
+          "notifications": []
+        }
+      },
+      {
+        "id": 6,
+        "title": "Memory Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "sum(container_memory_usage_bytes{container=\"hf-eco2ai\", namespace=\"$namespace\"}) by (pod)",
+            "legendFormat": "{{pod}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Bytes",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "CPU Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"hf-eco2ai\", namespace=\"$namespace\"}[5m])) by (pod)",
+            "legendFormat": "{{pod}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "CPU cores",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Active Users",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(hf_eco2ai_active_users_total{namespace=\"$namespace\", instance=~\"$instance\"})",
+            "legendFormat": "Active Users"
+          }
+        ],
+        "valueName": "current",
+        "format": "short"
+      },
+      {
+        "id": 9,
+        "title": "Model Predictions Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 28},
+        "targets": [
+          {
+            "expr": "sum(rate(hf_eco2ai_model_predictions_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m]))",
+            "legendFormat": "Predictions/sec"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Predictions/sec",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Model Accuracy",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 28},
+        "targets": [
+          {
+            "expr": "avg(hf_eco2ai_model_accuracy_percent{namespace=\"$namespace\", instance=~\"$instance\"})",
+            "legendFormat": "Accuracy %"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Percent",
+            "min": 0,
+            "max": 100
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Database Connections",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 36},
+        "targets": [
+          {
+            "expr": "sum(hf_eco2ai_database_connections_active{namespace=\"$namespace\", instance=~\"$instance\"})",
+            "legendFormat": "Active Connections"
+          },
+          {
+            "expr": "sum(hf_eco2ai_database_connections_idle{namespace=\"$namespace\", instance=~\"$instance\"})",
+            "legendFormat": "Idle Connections"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Connections",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Cache Hit Rate",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(rate(hf_eco2ai_cache_hits_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) / sum(rate(hf_eco2ai_cache_requests_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) * 100",
+            "legendFormat": "Cache Hit Rate %"
+          }
+        ],
+        "valueName": "current",
+        "format": "percent",
+        "thresholds": "70,85",
+        "colorBackground": true,
+        "colors": ["red", "yellow", "green"]
+      },
+      {
+        "id": 13,
+        "title": "Network I/O",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 36},
+        "targets": [
+          {
+            "expr": "sum(rate(container_network_receive_bytes_total{pod=~\"hf-eco2ai-.*\", namespace=\"$namespace\"}[5m]))",
+            "legendFormat": "Received"
+          },
+          {
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"hf-eco2ai-.*\", namespace=\"$namespace\"}[5m]))",
+            "legendFormat": "Transmitted"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Bytes/sec",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "title": "Pod Restart Count",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 44},
+        "targets": [
+          {
+            "expr": "sum(increase(kube_pod_container_status_restarts_total{container=\"hf-eco2ai\", namespace=\"$namespace\"}[1h])) by (pod)",
+            "legendFormat": "{{pod}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Restarts",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "HPA Replica Count",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 44},
+        "targets": [
+          {
+            "expr": "kube_horizontalpodautoscaler_status_current_replicas{hpa=\"hf-eco2ai\", namespace=\"$namespace\"}",
+            "legendFormat": "Current Replicas"
+          },
+          {
+            "expr": "kube_horizontalpodautoscaler_status_desired_replicas{hpa=\"hf-eco2ai\", namespace=\"$namespace\"}",
+            "legendFormat": "Desired Replicas"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Replicas",
+            "min": 0
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "title": "Carbon Efficiency",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 52},
+        "targets": [
+          {
+            "expr": "sum(rate(hf_eco2ai_carbon_emissions_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) / sum(rate(hf_eco2ai_requests_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m]))",
+            "legendFormat": "g CO2/request"
+          }
+        ],
+        "valueName": "current",
+        "format": "short",
+        "decimals": 4
+      },
+      {
+        "id": 17,
+        "title": "Daily Carbon Projection",
+        "type": "singlestat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 52},
+        "targets": [
+          {
+            "expr": "sum(rate(hf_eco2ai_carbon_emissions_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) * 3600 * 24",
+            "legendFormat": "g CO2/day"
+          }
+        ],
+        "valueName": "current",
+        "format": "short"
+      },
+      {
+        "id": 18,
+        "title": "Sustainability Score",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 52},
+        "targets": [
+          {
+            "expr": "100 - (sum(rate(hf_eco2ai_carbon_emissions_total{namespace=\"$namespace\", instance=~\"$instance\"}[5m])) * 3600 / 1000)",
+            "legendFormat": "Sustainability Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 50},
+                {"color": "green", "value": 80}
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "Deployments",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(prometheus_config_last_reload_success_timestamp_seconds[30m]) > 0",
+          "iconColor": "blue",
+          "step": "60s",
+          "textFormat": "Config Reload",
+          "titleFormat": "Prometheus Config Reload"
+        }
+      ]
+    }
+  }
+}

@@ -1,17 +1,51 @@
 apiVersion: v2
 name: hf-eco2ai
-description: A Helm chart for HF Eco2AI Plugin
+description: Enterprise-grade Helm chart for HF Eco2AI Plugin with comprehensive monitoring and scalability
 type: application
-version: 0.1.0
-appVersion: "0.1.0"
+version: 1.0.0
+appVersion: "1.0.0"
 keywords:
   - hf-eco2ai
   - carbon-tracking
   - ml
   - sustainability
+  - enterprise
+  - monitoring
+  - observability
+  - kubernetes
+  - production
 home: https://github.com/terragonlabs/hf-eco2ai-plugin
 sources:
   - https://github.com/terragonlabs/hf-eco2ai-plugin
 maintainers:
   - name: Daniel Schmidt
     email: daniel@terragonlabs.com
+  - name: TerragonLabs Enterprise Team
+    email: enterprise@terragonlabs.com
+dependencies:
+  - name: prometheus
+    version: "25.x.x"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: monitoring.prometheus.enabled
+  - name: grafana
+    version: "7.x.x" 
+    repository: "https://grafana.github.io/helm-charts"
+    condition: monitoring.grafana.enabled
+  - name: redis
+    version: "18.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+annotations:
+  category: Machine Learning
+  licenses: MIT
+  images: |
+    - name: hf-eco2ai
+      image: docker.io/terragonlabs/hf-eco2ai:1.0.0
+  artifacthub.io/prerelease: "false"
+  artifacthub.io/containsSecurityUpdates: "true"
+  artifacthub.io/changes: |
+    - Enterprise-grade production deployment
+    - Comprehensive monitoring and observability
+    - Multi-environment support
+    - Security hardening and compliance
+    - Auto-scaling and performance optimization

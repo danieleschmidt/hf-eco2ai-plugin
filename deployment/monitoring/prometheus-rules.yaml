@@ -1,0 +1,427 @@
+# Prometheus Alerting Rules for HF Eco2AI Plugin
+# Comprehensive monitoring and alerting for production deployment
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: hf-eco2ai-alerts
+  labels:
+    app.kubernetes.io/name: hf-eco2ai
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    # Application Health Alerts
+    - name: hf-eco2ai.application.health
+      interval: 30s
+      rules:
+        - alert: HFEco2AIServiceDown
+          expr: up{job="hf-eco2ai"} == 0
+          for: 1m
+          labels:
+            severity: critical
+            team: ml-platform
+            component: application
+          annotations:
+            summary: "HF Eco2AI service is down"
+            description: "HF Eco2AI service has been down for more than 1 minute on {{ $labels.instance }}"
+            runbook_url: "https://runbooks.company.com/hf-eco2ai/service-down"
+            dashboard_url: "https://grafana.company.com/d/hf-eco2ai-overview"
+
+        - alert: HFEco2AIHighErrorRate
+          expr: |
+            (
+              rate(hf_eco2ai_requests_total{status=~"5.."}[5m]) /
+              rate(hf_eco2ai_requests_total[5m])
+            ) * 100 > 5
+          for: 5m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: application
+          annotations:
+            summary: "High error rate detected"
+            description: "Error rate is {{ $value }}% for the last 5 minutes on {{ $labels.instance }}"
+            runbook_url: "https://runbooks.company.com/hf-eco2ai/high-error-rate"
+
+        - alert: HFEco2AIHighLatency
+          expr: |
+            histogram_quantile(0.95, 
+              rate(hf_eco2ai_request_duration_seconds_bucket[5m])
+            ) > 5
+          for: 2m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: application
+          annotations:
+            summary: "High request latency"
+            description: "95th percentile latency is {{ $value }}s on {{ $labels.instance }}"
+            runbook_url: "https://runbooks.company.com/hf-eco2ai/high-latency"
+
+        - alert: HFEco2AILowThroughput
+          expr: rate(hf_eco2ai_requests_total[5m]) < 1
+          for: 10m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: application
+          annotations:
+            summary: "Low request throughput"
+            description: "Request rate is {{ $value }} req/sec for the last 10 minutes on {{ $labels.instance }}"
+
+    # Carbon Tracking Alerts
+    - name: hf-eco2ai.carbon.tracking
+      interval: 60s
+      rules:
+        - alert: HighCarbonEmissions
+          expr: rate(hf_eco2ai_carbon_emissions_total[5m]) > 1000
+          for: 5m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: carbon-tracking
+          annotations:
+            summary: "High carbon emissions detected"
+            description: "Carbon emissions rate is {{ $value }} g CO2/hour on {{ $labels.instance }}"
+            runbook_url: "https://runbooks.company.com/hf-eco2ai/high-carbon-emissions"
+
+        - alert: CarbonTrackingFailure
+          expr: increase(hf_eco2ai_carbon_tracking_errors_total[10m]) > 5
+          for: 2m
+          labels:
+            severity: critical
+            team: ml-platform
+            component: carbon-tracking
+          annotations:
+            summary: "Carbon tracking experiencing failures"
+            description: "{{ $value }} carbon tracking errors in the last 10 minutes on {{ $labels.instance }}"
+
+        - alert: SustainabilityThresholdExceeded
+          expr: |
+            (
+              rate(hf_eco2ai_carbon_emissions_total[1h]) * 24
+            ) > 10000
+          for: 15m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: sustainability
+          annotations:
+            summary: "Daily carbon emission threshold exceeded"
+            description: "Projected daily emissions: {{ $value }} g CO2 on {{ $labels.instance }}"
+
+    # Resource Utilization Alerts
+    - name: hf-eco2ai.resources
+      interval: 30s
+      rules:
+        - alert: HighMemoryUsage
+          expr: |
+            (
+              container_memory_usage_bytes{container="hf-eco2ai"} /
+              container_spec_memory_limit_bytes{container="hf-eco2ai"}
+            ) * 100 > 80
+          for: 5m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: resources
+          annotations:
+            summary: "High memory usage"
+            description: "Memory usage is {{ $value }}% on {{ $labels.pod }}"
+            runbook_url: "https://runbooks.company.com/hf-eco2ai/high-memory-usage"
+
+        - alert: HighCPUUsage
+          expr: |
+            (
+              rate(container_cpu_usage_seconds_total{container="hf-eco2ai"}[5m]) /
+              container_spec_cpu_quota{container="hf-eco2ai"} * 
+              container_spec_cpu_period{container="hf-eco2ai"}
+            ) * 100 > 80
+          for: 5m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: resources
+          annotations:
+            summary: "High CPU usage"
+            description: "CPU usage is {{ $value }}% on {{ $labels.pod }}"
+
+        - alert: PodCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{container="hf-eco2ai"}[15m]) > 0
+          for: 5m
+          labels:
+            severity: critical
+            team: ml-platform
+            component: stability
+          annotations:
+            summary: "Pod is crash looping"
+            description: "Pod {{ $labels.pod }} is restarting frequently"
+
+    # Database and Dependencies
+    - name: hf-eco2ai.dependencies
+      interval: 60s
+      rules:
+        - alert: DatabaseConnectionFailure
+          expr: hf_eco2ai_database_connections_failed_total > 0
+          for: 2m
+          labels:
+            severity: critical
+            team: ml-platform
+            component: database
+          annotations:
+            summary: "Database connection failures"
+            description: "{{ $value }} database connection failures on {{ $labels.instance }}"
+
+        - alert: RedisConnectionFailure
+          expr: hf_eco2ai_redis_connections_failed_total > 0
+          for: 2m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: cache
+          annotations:
+            summary: "Redis connection failures"
+            description: "{{ $value }} Redis connection failures on {{ $labels.instance }}"
+
+        - alert: HighDatabaseLatency
+          expr: hf_eco2ai_database_query_duration_seconds{quantile="0.95"} > 1
+          for: 5m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: database
+          annotations:
+            summary: "High database query latency"
+            description: "95th percentile database query time is {{ $value }}s"
+
+    # Security and Compliance
+    - name: hf-eco2ai.security
+      interval: 300s
+      rules:
+        - alert: UnauthorizedAPIAccess
+          expr: increase(hf_eco2ai_requests_total{status="401"}[10m]) > 10
+          for: 2m
+          labels:
+            severity: warning
+            team: security
+            component: authentication
+          annotations:
+            summary: "High number of unauthorized API requests"
+            description: "{{ $value }} unauthorized requests in the last 10 minutes"
+
+        - alert: SuspiciousActivityDetected
+          expr: increase(hf_eco2ai_requests_total{status="403"}[5m]) > 5
+          for: 1m
+          labels:
+            severity: critical
+            team: security
+            component: authorization
+          annotations:
+            summary: "Suspicious activity detected"
+            description: "{{ $value }} forbidden requests in the last 5 minutes"
+
+    # Business Metrics
+    - name: hf-eco2ai.business
+      interval: 300s
+      rules:
+        - alert: LowUserEngagement
+          expr: rate(hf_eco2ai_active_users_total[1h]) < 10
+          for: 30m
+          labels:
+            severity: info
+            team: product
+            component: engagement
+          annotations:
+            summary: "Low user engagement"
+            description: "Active user rate is {{ $value }} users/hour"
+
+        - alert: ModelPerformanceDegradation
+          expr: hf_eco2ai_model_accuracy_percent < 85
+          for: 10m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: model-quality
+          annotations:
+            summary: "Model performance degradation"
+            description: "Model accuracy dropped to {{ $value }}%"
+
+    # Infrastructure Alerts
+    - name: hf-eco2ai.infrastructure
+      interval: 60s
+      rules:
+        - alert: KubernetesNodeNotReady
+          expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            team: platform
+            component: infrastructure
+          annotations:
+            summary: "Kubernetes node not ready"
+            description: "Node {{ $labels.node }} has been not ready for more than 5 minutes"
+
+        - alert: KubernetesPodNotReady
+          expr: kube_pod_status_phase{phase=~"Pending|Unknown"} > 0
+          for: 10m
+          labels:
+            severity: warning
+            team: platform
+            component: infrastructure
+          annotations:
+            summary: "Pod not ready"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is not ready"
+
+        - alert: PersistentVolumeSpaceRunningLow
+          expr: |
+            (
+              kubelet_volume_stats_available_bytes /
+              kubelet_volume_stats_capacity_bytes
+            ) * 100 < 20
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+            component: storage
+          annotations:
+            summary: "Persistent volume space running low"
+            description: "Volume {{ $labels.persistentvolumeclaim }} has only {{ $value }}% space remaining"
+
+    # Scaling Alerts
+    - name: hf-eco2ai.scaling
+      interval: 120s
+      rules:
+        - alert: HPAScalingToMaxReplicas
+          expr: |
+            kube_horizontalpodautoscaler_status_current_replicas{hpa="hf-eco2ai"} >=
+            kube_horizontalpodautoscaler_spec_max_replicas{hpa="hf-eco2ai"}
+          for: 10m
+          labels:
+            severity: warning
+            team: ml-platform
+            component: scaling
+          annotations:
+            summary: "HPA scaled to maximum replicas"
+            description: "HPA has scaled to maximum {{ $value }} replicas"
+
+        - alert: HPAScalingFrequent
+          expr: |
+            changes(kube_horizontalpodautoscaler_status_current_replicas{hpa="hf-eco2ai"}[30m]) > 5
+          for: 5m
+          labels:
+            severity: info
+            team: ml-platform
+            component: scaling
+          annotations:
+            summary: "Frequent HPA scaling events"
+            description: "{{ $value }} scaling events in the last 30 minutes"
+
+    # Monitoring System Health
+    - name: hf-eco2ai.monitoring
+      interval: 120s
+      rules:
+        - alert: PrometheusConfigReloadFailed
+          expr: prometheus_config_last_reload_successful == 0
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+            component: monitoring
+          annotations:
+            summary: "Prometheus configuration reload failed"
+            description: "Prometheus configuration reload failed"
+
+        - alert: AlertmanagerConfigInconsistent
+          expr: |
+            count by (job) (
+              count by (job, instance) (
+                alertmanager_config_hash
+              ) > 1
+            ) > 0
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+            component: monitoring
+          annotations:
+            summary: "Alertmanager configuration inconsistent"
+            description: "Alertmanager instances have inconsistent configurations"
+
+---
+# Recording Rules for Performance Optimization
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: hf-eco2ai-recording-rules
+  labels:
+    app.kubernetes.io/name: hf-eco2ai
+    app.kubernetes.io/component: monitoring
+spec:
+  groups:
+    - name: hf-eco2ai.recording.rules
+      interval: 30s
+      rules:
+        # Application Performance Metrics
+        - record: hf_eco2ai:request_rate
+          expr: rate(hf_eco2ai_requests_total[5m])
+
+        - record: hf_eco2ai:error_rate
+          expr: |
+            rate(hf_eco2ai_requests_total{status=~"5.."}[5m]) /
+            rate(hf_eco2ai_requests_total[5m])
+
+        - record: hf_eco2ai:latency_p95
+          expr: |
+            histogram_quantile(0.95,
+              rate(hf_eco2ai_request_duration_seconds_bucket[5m])
+            )
+
+        - record: hf_eco2ai:latency_p99
+          expr: |
+            histogram_quantile(0.99,
+              rate(hf_eco2ai_request_duration_seconds_bucket[5m])
+            )
+
+        # Carbon Tracking Metrics
+        - record: hf_eco2ai:carbon_emission_rate
+          expr: rate(hf_eco2ai_carbon_emissions_total[5m]) * 3600
+
+        - record: hf_eco2ai:daily_carbon_projection
+          expr: hf_eco2ai:carbon_emission_rate * 24
+
+        - record: hf_eco2ai:carbon_efficiency
+          expr: |
+            hf_eco2ai:carbon_emission_rate /
+            rate(hf_eco2ai_requests_total[5m])
+
+        # Resource Utilization
+        - record: hf_eco2ai:memory_utilization
+          expr: |
+            (
+              container_memory_usage_bytes{container="hf-eco2ai"} /
+              container_spec_memory_limit_bytes{container="hf-eco2ai"}
+            ) * 100
+
+        - record: hf_eco2ai:cpu_utilization
+          expr: |
+            (
+              rate(container_cpu_usage_seconds_total{container="hf-eco2ai"}[5m]) /
+              (
+                container_spec_cpu_quota{container="hf-eco2ai"} /
+                container_spec_cpu_period{container="hf-eco2ai"}
+              )
+            ) * 100
+
+        # Business Metrics
+        - record: hf_eco2ai:active_users_rate
+          expr: rate(hf_eco2ai_active_users_total[1h])
+
+        - record: hf_eco2ai:model_prediction_rate
+          expr: rate(hf_eco2ai_model_predictions_total[5m])
+
+        - record: hf_eco2ai:model_accuracy_rolling
+          expr: |
+            (
+              rate(hf_eco2ai_model_predictions_correct_total[1h]) /
+              rate(hf_eco2ai_model_predictions_total[1h])
+            ) * 100

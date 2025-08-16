@@ -731,7 +731,7 @@ F-statistics (F>10 for all instruments).
             )
         
         return f"""
-\\section{Statistical Validation}
+\\section{{Statistical Validation}}
 
 Comprehensive statistical validation was performed to ensure research rigor and reproducibility. 
 {passed_validations}/{total_validations} validation tests passed successfully.

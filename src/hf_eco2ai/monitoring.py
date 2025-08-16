@@ -480,6 +480,44 @@ class EnergyTracker:
             "watts_per_sample": 0.0,
         }
     
+    def predict_carbon_budget_exhaustion(self, current_usage_kg: float, budget_limit_kg: float, 
+                                       training_progress: float) -> CarbonBudgetForecast:
+        """Predict when carbon budget will be exhausted."""
+        # Get historical efficiency data
+        historical_efficiency = []
+        if hasattr(self.gpu_monitor, 'metrics_history'):
+            with self.gpu_monitor._lock:
+                for gpu_metrics in self.gpu_monitor.metrics_history.values():
+                    if gpu_metrics:
+                        efficiency_values = [m.power_efficiency for m in gpu_metrics[-20:] if hasattr(m, 'power_efficiency') and m.power_efficiency > 0]
+                        historical_efficiency.extend(efficiency_values)
+        
+        return self.gpu_monitor.analytics_engine.predict_carbon_budget(
+            current_usage_kg, budget_limit_kg, training_progress, historical_efficiency
+        )
+    
+    def get_anomaly_report(self, hours: float = 1.0) -> Dict[str, Any]:
+        """Get detailed anomaly report for specified time period."""
+        if hasattr(self.gpu_monitor, 'get_anomaly_report'):
+            return self.gpu_monitor.get_anomaly_report(hours)
+        return {"error": "Advanced analytics not available"}
+    
+    def get_optimization_recommendations(self, hours: float = 1.0) -> List[Dict[str, Any]]:
+        """Get recent optimization recommendations."""
+        if hasattr(self.gpu_monitor, 'get_optimization_recommendations'):
+            return self.gpu_monitor.get_optimization_recommendations(hours)
+        return []
+    
+    def add_anomaly_callback(self, callback: Callable):
+        """Add callback for anomaly notifications."""
+        if hasattr(self.gpu_monitor, 'add_anomaly_callback'):
+            self.gpu_monitor.add_anomaly_callback(callback)
+    
+    def add_recommendation_callback(self, callback: Callable):
+        """Add callback for optimization recommendations."""
+        if hasattr(self.gpu_monitor, 'add_recommendation_callback'):
+            self.gpu_monitor.add_recommendation_callback(callback)
+    
     def is_available(self) -> bool:
         """Check if energy tracking is available."""
         # Allow mock mode for development
