@@ -2,7 +2,7 @@
 
 import time
 import threading
-from typing import Dict, List, Optional, Tuple, Callable
+from typing import Dict, List, Optional, Tuple, Callable, Any
 import logging
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor
@@ -47,6 +47,16 @@ class GPUMetrics:
     memory_total_mb: float = 0.0
     temperature_c: float = 0.0
     energy_kwh: float = 0.0  # Cumulative energy consumption
+
+
+@dataclass
+class CarbonBudgetForecast:
+    """Forecast for carbon budget usage."""
+    estimated_completion_co2_kg: float
+    budget_utilization_percent: float  
+    forecasted_overage_kg: float
+    confidence_level: float
+    recommendation: str
 
 
 @dataclass
