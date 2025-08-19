@@ -1,3 +1,4 @@
+import gymnasium
 """AI-Powered Optimization Engine for Carbon-Efficient ML Training.
 
 This module implements advanced AI optimization capabilities including machine learning
@@ -919,7 +920,7 @@ class ReinforcementLearningOptimizer:
         }
 
 
-class CarbonOptimizationEnv(gym.Env):
+class CarbonOptimizationEnv(gymnasium.Env):
     """Custom Gym environment for carbon optimization."""
     
     def __init__(self):

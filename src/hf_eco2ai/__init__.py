@@ -18,8 +18,8 @@ from .enhanced_integration import (
     initialize_enhanced_system,
     create_enhanced_callback
 )
-from .security_enhanced import EnhancedSecurityManager
-from .health_monitor_enhanced import EnhancedHealthMonitor
+from .security_enhanced import EnhancedSecurityValidator as EnhancedSecurityManager
+from .health_monitor_enhanced import EnterpriseHealthMonitor as EnhancedHealthMonitor
 from .fault_tolerance_enhanced import EnhancedFaultToleranceManager
 from .error_handling_enhanced import EnhancedErrorHandler
 from .compliance import ComplianceFramework, AuditEventType, ComplianceLevel
