@@ -1,0 +1,938 @@
+{
+  "report_metadata": {
+    "generated_at": "2025-08-20T12:40:11.583412",
+    "validation_duration": 0.158102,
+    "validator_version": "1.0.0",
+    "project_root": "/root/repo"
+  },
+  "overall_assessment": {
+    "score": 0.7504,
+    "status": "good",
+    "grade": "B"
+  },
+  "validation_results": {
+    "file_structure": {
+      "status": "success",
+      "categories": {
+        "core_files": {
+          "present": [
+            "src/hf_eco2ai/__init__.py",
+            "pyproject.toml",
+            "README.md",
+            "LICENSE"
+          ],
+          "missing": [],
+          "total": 4,
+          "score": 1.0
+        },
+        "breakthrough_systems": {
+          "present": [
+            "src/hf_eco2ai/quantum_temporal_intelligence.py",
+            "src/hf_eco2ai/emergent_swarm_carbon_intelligence.py",
+            "src/hf_eco2ai/multimodal_carbon_intelligence.py",
+            "src/hf_eco2ai/autonomous_publication_engine.py"
+          ],
+          "missing": [],
+          "total": 4,
+          "score": 1.0
+        },
+        "demo_files": {
+          "present": [
+            "breakthrough_carbon_intelligence_demo.py"
+          ],
+          "missing": [],
+          "total": 1,
+          "score": 1.0
+        },
+        "configuration": {
+          "present": [
+            "pytest.ini",
+            "tox.ini"
+          ],
+          "missing": [],
+          "total": 2,
+          "score": 1.0
+        }
+      },
+      "missing_files": [],
+      "present_files": [
+        "src/hf_eco2ai/__init__.py",
+        "pyproject.toml",
+        "README.md",
+        "LICENSE",
+        "src/hf_eco2ai/quantum_temporal_intelligence.py",
+        "src/hf_eco2ai/emergent_swarm_carbon_intelligence.py",
+        "src/hf_eco2ai/multimodal_carbon_intelligence.py",
+        "src/hf_eco2ai/autonomous_publication_engine.py",
+        "breakthrough_carbon_intelligence_demo.py",
+        "pytest.ini",
+        "tox.ini"
+      ],
+      "file_sizes": {
+        "src/hf_eco2ai/__init__.py": 7710,
+        "pyproject.toml": 7136,
+        "README.md": 16020,
+        "LICENSE": 1071,
+        "src/hf_eco2ai/quantum_temporal_intelligence.py": 37051,
+        "src/hf_eco2ai/emergent_swarm_carbon_intelligence.py": 45010,
+        "src/hf_eco2ai/multimodal_carbon_intelligence.py": 62494,
+        "src/hf_eco2ai/autonomous_publication_engine.py": 59437,
+        "breakthrough_carbon_intelligence_demo.py": 31036,
+        "pytest.ini": 587,
+        "tox.ini": 1342
+      },
+      "overall_score": 1.0
+    },
+    "code_quality": {
+      "status": "failure",
+      "total_files": 61,
+      "lines_of_code": 152,
+      "complexity_analysis": {},
+      "documentation_coverage": 1.0,
+      "file_analysis": {
+        "src/hf_eco2ai/__init__.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 0,
+          "classes": 0,
+          "complexity_score": 3
+        },
+        "src/hf_eco2ai/__init_simple__.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 0,
+          "classes": 0,
+          "complexity_score": 1
+        },
+        "src/hf_eco2ai/adaptive_scaling.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 51,
+          "classes": 8,
+          "complexity_score": 304
+        },
+        "src/hf_eco2ai/advanced_caching.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 55,
+          "classes": 11,
+          "complexity_score": 631
+        },
+        "src/hf_eco2ai/advanced_optimization.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 19,
+          "classes": 2,
+          "complexity_score": 144
+        },
+        "src/hf_eco2ai/ai_optimization_engine.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 56,
+          "classes": 13,
+          "complexity_score": 653
+        },
+        "src/hf_eco2ai/api.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 22,
+          "classes": 5,
+          "complexity_score": 178
+        },
+        "src/hf_eco2ai/autonomous_research_engine.py": {
+          "lines": 12,
+          "has_docstring": true,
+          "functions": 80,
+          "classes": 16,
+          "complexity_score": 574
+        },
+        "src/hf_eco2ai/benchmark.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 22,
+          "classes": 3,
+          "complexity_score": 107
+        },
+        "src/hf_eco2ai/callback.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 26,
+          "classes": 7,
+          "complexity_score": 503
+        },
+        "src/hf_eco2ai/carbon_intelligence.py": {
+          "lines": 3,
+          "has_docstring": true,
+          "functions": 14,
+          "classes": 5,
+          "complexity_score": 200
+        },
+        "src/hf_eco2ai/causal_carbon_analysis.py": {
+          "lines": 4,
+          "has_docstring": true,
+          "functions": 42,
+          "classes": 8,
+          "complexity_score": 362
+        },
+        "src/hf_eco2ai/cli.py": {
+          "lines": 10,
+          "has_docstring": true,
+          "functions": 6,
+          "classes": 0,
+          "complexity_score": 143
+        },
+        "src/hf_eco2ai/compliance.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 42,
+          "classes": 11,
+          "complexity_score": 262
+        },
+        "src/hf_eco2ai/config.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 10,
+          "classes": 2,
+          "complexity_score": 128
+        },
+        "src/hf_eco2ai/distributed.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 30,
+          "classes": 6,
+          "complexity_score": 298
+        },
+        "src/hf_eco2ai/distributed_processing_engine.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 53,
+          "classes": 10,
+          "complexity_score": 554
+        },
+        "src/hf_eco2ai/edge_optimizer.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 45,
+          "classes": 12,
+          "complexity_score": 450
+        },
+        "src/hf_eco2ai/enhanced_integration.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 33,
+          "classes": 5,
+          "complexity_score": 322
+        },
+        "src/hf_eco2ai/enhanced_usage_example.py": {
+          "lines": 7,
+          "has_docstring": true,
+          "functions": 9,
+          "classes": 0,
+          "complexity_score": 75
+        },
+        "src/hf_eco2ai/enterprise_autoscaling.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 36,
+          "classes": 9,
+          "complexity_score": 440
+        },
+        "src/hf_eco2ai/enterprise_hub.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 41,
+          "classes": 14,
+          "complexity_score": 286
+        },
+        "src/hf_eco2ai/enterprise_monitoring.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 40,
+          "classes": 7,
+          "complexity_score": 293
+        },
+        "src/hf_eco2ai/error_handling.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 27,
+          "classes": 7,
+          "complexity_score": 92
+        },
+        "src/hf_eco2ai/error_handling_enhanced.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 68,
+          "classes": 15,
+          "complexity_score": 567
+        },
+        "src/hf_eco2ai/exporters.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 17,
+          "classes": 4,
+          "complexity_score": 146
+        },
+        "src/hf_eco2ai/fault_tolerance.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 31,
+          "classes": 8,
+          "complexity_score": 330
+        },
+        "src/hf_eco2ai/fault_tolerance_enhanced.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 76,
+          "classes": 13,
+          "complexity_score": 851
+        },
+        "src/hf_eco2ai/federated_carbon_intelligence.py": {
+          "lines": 8,
+          "has_docstring": true,
+          "functions": 28,
+          "classes": 10,
+          "complexity_score": 381
+        },
+        "src/hf_eco2ai/federated_carbon_learning.py": {
+          "lines": 3,
+          "has_docstring": true,
+          "functions": 19,
+          "classes": 5,
+          "complexity_score": 146
+        },
+        "src/hf_eco2ai/global_carbon_grid_optimizer.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 28,
+          "classes": 7,
+          "complexity_score": 387
+        },
+        "src/hf_eco2ai/health.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 27,
+          "classes": 5,
+          "complexity_score": 195
+        },
+        "src/hf_eco2ai/health_monitor.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 22,
+          "classes": 5,
+          "complexity_score": 84
+        },
+        "src/hf_eco2ai/health_monitor_enhanced.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 74,
+          "classes": 14,
+          "complexity_score": 1125
+        },
+        "src/hf_eco2ai/integrations.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 32,
+          "classes": 13,
+          "complexity_score": 152
+        },
+        "src/hf_eco2ai/lite_demo.py": {
+          "lines": 3,
+          "has_docstring": true,
+          "functions": 10,
+          "classes": 4,
+          "complexity_score": 15
+        },
+        "src/hf_eco2ai/mock_eco2ai.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 7,
+          "classes": 1,
+          "complexity_score": 23
+        },
+        "src/hf_eco2ai/models.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 10,
+          "classes": 5,
+          "complexity_score": 66
+        },
+        "src/hf_eco2ai/monitoring.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 28,
+          "classes": 7,
+          "complexity_score": 243
+        },
+        "src/hf_eco2ai/optimization.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 42,
+          "classes": 5,
+          "complexity_score": 359
+        },
+        "src/hf_eco2ai/performance.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 45,
+          "classes": 6,
+          "complexity_score": 255
+        },
+        "src/hf_eco2ai/performance_optimizer.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 41,
+          "classes": 5,
+          "complexity_score": 176
+        },
+        "src/hf_eco2ai/predictive_carbon_intelligence.py": {
+          "lines": 3,
+          "has_docstring": true,
+          "functions": 27,
+          "classes": 6,
+          "complexity_score": 320
+        },
+        "src/hf_eco2ai/quantum_carbon_monitor.py": {
+          "lines": 6,
+          "has_docstring": true,
+          "functions": 23,
+          "classes": 8,
+          "complexity_score": 144
+        },
+        "src/hf_eco2ai/quantum_optimizer.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 34,
+          "classes": 6,
+          "complexity_score": 228
+        },
+        "src/hf_eco2ai/quantum_performance_engine.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 37,
+          "classes": 7,
+          "complexity_score": 276
+        },
+        "src/hf_eco2ai/quantum_planner.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 36,
+          "classes": 3,
+          "complexity_score": 513
+        },
+        "src/hf_eco2ai/research_analytics_platform.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 46,
+          "classes": 15,
+          "complexity_score": 890
+        },
+        "src/hf_eco2ai/resilience.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 35,
+          "classes": 7,
+          "complexity_score": 244
+        },
+        "src/hf_eco2ai/revolutionary_carbon_intelligence.py": {
+          "lines": 9,
+          "has_docstring": true,
+          "functions": 16,
+          "classes": 6,
+          "complexity_score": 167
+        },
+        "src/hf_eco2ai/security.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 36,
+          "classes": 6,
+          "complexity_score": 252
+        },
+        "src/hf_eco2ai/security_enhanced.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 55,
+          "classes": 12,
+          "complexity_score": 454
+        },
+        "src/hf_eco2ai/standalone_test.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 7,
+          "classes": 2,
+          "complexity_score": 26
+        },
+        "src/hf_eco2ai/storage.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 23,
+          "classes": 3,
+          "complexity_score": 147
+        },
+        "src/hf_eco2ai/sustainability_optimizer.py": {
+          "lines": 3,
+          "has_docstring": true,
+          "functions": 25,
+          "classes": 5,
+          "complexity_score": 144
+        },
+        "src/hf_eco2ai/utils.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 15,
+          "classes": 0,
+          "complexity_score": 133
+        },
+        "src/hf_eco2ai/validation.py": {
+          "lines": 2,
+          "has_docstring": true,
+          "functions": 29,
+          "classes": 6,
+          "complexity_score": 253
+        },
+        "src/hf_eco2ai/emergent_swarm_carbon_intelligence.py": {
+          "lines": 3,
+          "has_docstring": true,
+          "functions": 39,
+          "classes": 11,
+          "complexity_score": 503
+        },
+        "src/hf_eco2ai/quantum_temporal_intelligence.py": {
+          "lines": 1,
+          "has_docstring": true,
+          "functions": 36,
+          "classes": 11,
+          "complexity_score": 255
+        },
+        "src/hf_eco2ai/multimodal_carbon_intelligence.py": {
+          "lines": 4,
+          "has_docstring": true,
+          "functions": 74,
+          "classes": 12,
+          "complexity_score": 539
+        },
+        "src/hf_eco2ai/autonomous_publication_engine.py": {
+          "lines": 18,
+          "has_docstring": true,
+          "functions": 50,
+          "classes": 11,
+          "complexity_score": 455
+        }
+      },
+      "avg_complexity": 302.40983606557376,
+      "overall_quality_score": 0.4
+    },
+    "architecture": {
+      "status": "success",
+      "breakthrough_systems": {
+        "quantum_temporal_intelligence.py": {
+          "status": "analyzed",
+          "classes": 11,
+          "functions": 36,
+          "async_functions": 12,
+          "imports": 50,
+          "docstrings": 74,
+          "type_annotations": 156,
+          "design_patterns": [
+            "Factory Pattern",
+            "Async Pattern",
+            "Enum Pattern"
+          ],
+          "score": 0.9199999999999999
+        },
+        "emergent_swarm_carbon_intelligence.py": {
+          "status": "analyzed",
+          "classes": 11,
+          "functions": 39,
+          "async_functions": 10,
+          "imports": 38,
+          "docstrings": 84,
+          "type_annotations": 192,
+          "design_patterns": [
+            "Factory Pattern",
+            "Async Pattern",
+            "Enum Pattern"
+          ],
+          "score": 0.9199999999999999
+        },
+        "multimodal_carbon_intelligence.py": {
+          "status": "analyzed",
+          "classes": 12,
+          "functions": 74,
+          "async_functions": 22,
+          "imports": 61,
+          "docstrings": 122,
+          "type_annotations": 283,
+          "design_patterns": [
+            "Factory Pattern",
+            "Async Pattern",
+            "Enum Pattern"
+          ],
+          "score": 0.9199999999999999
+        },
+        "autonomous_publication_engine.py": {
+          "status": "analyzed",
+          "classes": 11,
+          "functions": 50,
+          "async_functions": 14,
+          "imports": 38,
+          "docstrings": 106,
+          "type_annotations": 254,
+          "design_patterns": [
+            "Factory Pattern",
+            "Async Pattern",
+            "Enum Pattern"
+          ],
+          "score": 0.9199999999999999
+        }
+      },
+      "integration_quality": 1.0,
+      "modularity_score": 0.9199999999999999,
+      "design_patterns": [],
+      "overall_architecture_score": 0.952
+    },
+    "functionality": {
+      "status": "success",
+      "python_version": "3.12.3 (main, Jun 18 2025, 17:59:45) [GCC 13.3.0]",
+      "core_imports": {
+        "json": "success",
+        "logging": "success",
+        "datetime": "success",
+        "pathlib": "success",
+        "asyncio": "success",
+        "typing": "success"
+      },
+      "demo_validation": {
+        "file_exists": true,
+        "has_main_function": true,
+        "has_orchestrator": true,
+        "simulation_mode": true,
+        "comprehensive_demo": true
+      },
+      "simulation_capability": true,
+      "overall_functionality_score": 1.0
+    },
+    "security": {
+      "status": "warning",
+      "potential_issues": [
+        {
+          "file": "src/hf_eco2ai/adaptive_scaling.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/advanced_caching.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/advanced_optimization.py",
+          "type": "unsafe_imports",
+          "pattern": "eval(",
+          "severity": "medium"
+        },
+        {
+          "file": "src/hf_eco2ai/autonomous_research_engine.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/benchmark.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/carbon_intelligence.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/causal_carbon_analysis.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/compliance.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/enterprise_hub.py",
+          "type": "hardcoded_secrets",
+          "pattern": "password =",
+          "severity": "medium"
+        },
+        {
+          "file": "src/hf_eco2ai/enterprise_hub.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/enterprise_hub.py",
+          "type": "network_operations",
+          "pattern": "requests.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/enterprise_monitoring.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/error_handling.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/error_handling_enhanced.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/error_handling_enhanced.py",
+          "type": "network_operations",
+          "pattern": "requests.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/fault_tolerance.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/fault_tolerance_enhanced.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/fault_tolerance_enhanced.py",
+          "type": "file_operations",
+          "pattern": "subprocess.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/fault_tolerance_enhanced.py",
+          "type": "network_operations",
+          "pattern": "requests.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/federated_carbon_learning.py",
+          "type": "unsafe_imports",
+          "pattern": "eval(",
+          "severity": "medium"
+        },
+        {
+          "file": "src/hf_eco2ai/federated_carbon_learning.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/global_carbon_grid_optimizer.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/health.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/health_monitor.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/health_monitor_enhanced.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/health_monitor_enhanced.py",
+          "type": "network_operations",
+          "pattern": "requests.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/health_monitor_enhanced.py",
+          "type": "network_operations",
+          "pattern": "socket.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/integrations.py",
+          "type": "file_operations",
+          "pattern": "subprocess.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/integrations.py",
+          "type": "network_operations",
+          "pattern": "requests.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/lite_demo.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/models.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/optimization.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/predictive_carbon_intelligence.py",
+          "type": "unsafe_imports",
+          "pattern": "eval(",
+          "severity": "medium"
+        },
+        {
+          "file": "src/hf_eco2ai/predictive_carbon_intelligence.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/quantum_optimizer.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/quantum_planner.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/resilience.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/security.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/security.py",
+          "type": "network_operations",
+          "pattern": "urllib.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/security_enhanced.py",
+          "type": "hardcoded_secrets",
+          "pattern": "password =",
+          "severity": "medium"
+        },
+        {
+          "file": "src/hf_eco2ai/security_enhanced.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/security_enhanced.py",
+          "type": "network_operations",
+          "pattern": "urllib.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/storage.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/sustainability_optimizer.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/utils.py",
+          "type": "file_operations",
+          "pattern": "subprocess.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/validation.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/validation.py",
+          "type": "network_operations",
+          "pattern": "socket.",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/multimodal_carbon_intelligence.py",
+          "type": "unsafe_imports",
+          "pattern": "eval(",
+          "severity": "medium"
+        },
+        {
+          "file": "src/hf_eco2ai/multimodal_carbon_intelligence.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/autonomous_publication_engine.py",
+          "type": "file_operations",
+          "pattern": "open(",
+          "severity": "low"
+        },
+        {
+          "file": "src/hf_eco2ai/autonomous_publication_engine.py",
+          "type": "network_operations",
+          "pattern": "urllib.",
+          "severity": "low"
+        }
+      ],
+      "security_practices": {
+        "proper_imports": true,
+        "no_wildcard_imports": true,
+        "version_specified": true,
+        "author_specified": true
+      },
+      "file_permissions": {},
+      "overall_security_score": 0.3999999999999999
+    }
+  },
+  "recommendations": [
+    "Address potential security issues identified in code analysis"
+  ],
+  "quality_gates_passed": true
+}
