@@ -1,0 +1,213 @@
+{
+  "test_suite_summary": {
+    "start_time": "2025-08-21T11:58:22.205035",
+    "end_time": "2025-08-21T11:58:22.346181",
+    "duration_seconds": 0.141135,
+    "total_tests": 20,
+    "passed_tests": 20,
+    "failed_tests": 0,
+    "overall_pass_rate": 100.0,
+    "overall_score": 100.0,
+    "quality_grade": "A+ (Excellent)"
+  },
+  "category_summaries": {
+    "environment": {
+      "total_tests": 6,
+      "passed_tests": 6,
+      "failed_tests": 0,
+      "pass_rate": 100.0,
+      "average_score": 100.0
+    },
+    "structure": {
+      "total_tests": 7,
+      "passed_tests": 7,
+      "failed_tests": 0,
+      "pass_rate": 100.0,
+      "average_score": 100.0
+    },
+    "quality": {
+      "total_tests": 2,
+      "passed_tests": 2,
+      "failed_tests": 0,
+      "pass_rate": 100.0,
+      "average_score": 100.0
+    },
+    "functionality": {
+      "total_tests": 2,
+      "passed_tests": 2,
+      "failed_tests": 0,
+      "pass_rate": 100.0,
+      "average_score": 100.0
+    },
+    "security": {
+      "total_tests": 3,
+      "passed_tests": 3,
+      "failed_tests": 0,
+      "pass_rate": 100.0,
+      "average_score": 100.0
+    }
+  },
+  "detailed_results": [
+    {
+      "category": "environment",
+      "test_name": "python_version",
+      "passed": true,
+      "score": 100.0,
+      "message": "Python 3.12.3",
+      "execution_time": 6e-06
+    },
+    {
+      "category": "environment",
+      "test_name": "import_json",
+      "passed": true,
+      "score": 100.0,
+      "message": "Successfully imported json",
+      "execution_time": 1e-05
+    },
+    {
+      "category": "environment",
+      "test_name": "import_asyncio",
+      "passed": true,
+      "score": 100.0,
+      "message": "Successfully imported asyncio",
+      "execution_time": 4e-06
+    },
+    {
+      "category": "environment",
+      "test_name": "import_logging",
+      "passed": true,
+      "score": 100.0,
+      "message": "Successfully imported logging",
+      "execution_time": 3e-06
+    },
+    {
+      "category": "environment",
+      "test_name": "import_pathlib",
+      "passed": true,
+      "score": 100.0,
+      "message": "Successfully imported pathlib",
+      "execution_time": 3e-06
+    },
+    {
+      "category": "environment",
+      "test_name": "import_datetime",
+      "passed": true,
+      "score": 100.0,
+      "message": "Successfully imported datetime",
+      "execution_time": 2e-06
+    },
+    {
+      "category": "structure",
+      "test_name": "directory_src_hf_eco2ai",
+      "passed": true,
+      "score": 100.0,
+      "message": "Directory src/hf_eco2ai exists",
+      "execution_time": 9.1e-05
+    },
+    {
+      "category": "structure",
+      "test_name": "directory_tests",
+      "passed": true,
+      "score": 100.0,
+      "message": "Directory tests exists",
+      "execution_time": 4.7e-05
+    },
+    {
+      "category": "structure",
+      "test_name": "directory_docs",
+      "passed": true,
+      "score": 100.0,
+      "message": "Directory docs exists",
+      "execution_time": 2.6e-05
+    },
+    {
+      "category": "structure",
+      "test_name": "directory_deployment",
+      "passed": true,
+      "score": 100.0,
+      "message": "Directory deployment exists",
+      "execution_time": 2.1e-05
+    },
+    {
+      "category": "structure",
+      "test_name": "file_pyproject_toml",
+      "passed": true,
+      "score": 100.0,
+      "message": "File pyproject.toml exists",
+      "execution_time": 3.1e-05
+    },
+    {
+      "category": "structure",
+      "test_name": "file_README_md",
+      "passed": true,
+      "score": 100.0,
+      "message": "File README.md exists",
+      "execution_time": 2.3e-05
+    },
+    {
+      "category": "structure",
+      "test_name": "file_src_hf_eco2ai___init___py",
+      "passed": true,
+      "score": 100.0,
+      "message": "File src/hf_eco2ai/__init__.py exists",
+      "execution_time": 2.3e-05
+    },
+    {
+      "category": "quality",
+      "test_name": "python_file_count",
+      "passed": true,
+      "score": 100.0,
+      "message": "Excellent: 115 Python files",
+      "execution_time": 0.003461
+    },
+    {
+      "category": "quality",
+      "test_name": "configuration_completeness",
+      "passed": true,
+      "score": 100.0,
+      "message": "Configuration: 4/4 sections complete",
+      "execution_time": 0.000139
+    },
+    {
+      "category": "functionality",
+      "test_name": "autonomous_validator",
+      "passed": true,
+      "score": 100.0,
+      "message": "Autonomous validator working correctly",
+      "execution_time": 0.135811
+    },
+    {
+      "category": "functionality",
+      "test_name": "enhanced_demo_exists",
+      "passed": true,
+      "score": 100.0,
+      "message": "Enhanced demo file exists",
+      "execution_time": 7.8e-05
+    },
+    {
+      "category": "security",
+      "test_name": "security_file_SECURITY_md",
+      "passed": true,
+      "score": 100.0,
+      "message": "Security file SECURITY.md exists",
+      "execution_time": 6e-05
+    },
+    {
+      "category": "security",
+      "test_name": "security_file__bandit",
+      "passed": true,
+      "score": 100.0,
+      "message": "Security file .bandit exists",
+      "execution_time": 2.5e-05
+    },
+    {
+      "category": "security",
+      "test_name": "security_file_scripts_security-scan_sh",
+      "passed": true,
+      "score": 100.0,
+      "message": "Security file scripts/security-scan.sh exists",
+      "execution_time": 8.3e-05
+    }
+  ],
+  "timestamp": "2025-08-21T11:58:22.346200"
+}

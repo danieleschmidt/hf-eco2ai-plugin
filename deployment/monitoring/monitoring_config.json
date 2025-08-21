@@ -1,0 +1,44 @@
+{
+  "prometheus": {
+    "enabled": true,
+    "scrape_interval": "15s",
+    "retention": "30d",
+    "targets": [
+      "hf-eco2ai-core:9090",
+      "hf-eco2ai-api:9091",
+      "hf-eco2ai-worker:9092"
+    ]
+  },
+  "grafana": {
+    "enabled": true,
+    "dashboards": [
+      "carbon-tracking-overview",
+      "training-performance",
+      "system-health",
+      "security-alerts"
+    ]
+  },
+  "alertmanager": {
+    "enabled": true,
+    "rules": [
+      {
+        "name": "high_cpu_usage",
+        "condition": "cpu_usage > 80",
+        "duration": "5m",
+        "severity": "warning"
+      },
+      {
+        "name": "memory_exhaustion",
+        "condition": "memory_usage > 90",
+        "duration": "2m",
+        "severity": "critical"
+      },
+      {
+        "name": "carbon_tracking_failure",
+        "condition": "carbon_tracking_errors > 10",
+        "duration": "1m",
+        "severity": "critical"
+      }
+    ]
+  }
+}

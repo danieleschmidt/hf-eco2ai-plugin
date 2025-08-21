@@ -1,0 +1,27 @@
+{
+  "total_tests": 3,
+  "passed_tests": 3,
+  "failed_tests": 0,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "test_name": "python_imports",
+      "passed": true,
+      "message": "Python imports working, HF available: False",
+      "execution_time": 0.000199
+    },
+    {
+      "test_name": "file_structure",
+      "passed": true,
+      "message": "All required files present",
+      "execution_time": 0.00012
+    },
+    {
+      "test_name": "configuration",
+      "passed": true,
+      "message": "Configuration files valid",
+      "execution_time": 1.7e-05
+    }
+  ],
+  "timestamp": "2025-08-21T11:58:22.326963"
+}
