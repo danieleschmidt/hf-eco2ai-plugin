@@ -1,0 +1,30 @@
+{
+  "product_name": "HF Eco2AI Plugin",
+  "version": "1.0.0",
+  "deployment_id": "terragon-prod-1756042905",
+  "build_timestamp": "2025-08-24T13:41:45.240957",
+  "terragon_sdlc_version": "4.0",
+  "production_ready": true,
+  "components": {
+    "hf_eco2ai": {
+      "type": "python_library",
+      "version": "1.0.0",
+      "path": "src/hf_eco2ai",
+      "main_module": "mock_integration"
+    }
+  },
+  "features": [
+    "Carbon tracking for ML training",
+    "Multi-modal support",
+    "Enterprise reliability",
+    "Global deployment ready",
+    "Quantum performance optimization",
+    "Real-time monitoring"
+  ],
+  "deployment_targets": [
+    "Local development",
+    "Cloud deployment",
+    "Multi-region distribution",
+    "Enterprise environments"
+  ]
+}

@@ -1,0 +1,22 @@
+# Core Dependencies - Generation 1: MAKE IT WORK (Simple)
+transformers>=4.40.0
+torch>=2.0.0
+eco2ai>=0.3.12
+pynvml>=11.5.0
+
+# Essential monitoring and metrics
+prometheus-client>=0.20.0
+pandas>=2.0.0
+plotly>=5.20.0
+
+# Carbon tracking dependencies
+carbontracker>=1.5.0
+codecarbon>=2.3.0
+
+# Basic testing framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Code quality
+black>=23.0.0
+ruff>=0.1.0
