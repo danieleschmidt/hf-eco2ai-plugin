@@ -1,0 +1,156 @@
+{
+  "global_deployment": {
+    "multi_region": {
+      "enabled": true,
+      "primary_region": "us-east-1",
+      "regions": [
+        {
+          "name": "us-east-1",
+          "provider": "aws",
+          "carbon_intensity": 415,
+          "renewable_percentage": 45,
+          "timezone": "America/New_York",
+          "compliance": ["SOC2", "GDPR", "CCPA"]
+        },
+        {
+          "name": "eu-west-1",
+          "provider": "aws", 
+          "carbon_intensity": 312,
+          "renewable_percentage": 67,
+          "timezone": "Europe/London",
+          "compliance": ["GDPR", "SOC2", "ISO27001"]
+        },
+        {
+          "name": "ap-northeast-1",
+          "provider": "aws",
+          "carbon_intensity": 468,
+          "renewable_percentage": 23,
+          "timezone": "Asia/Tokyo",
+          "compliance": ["SOC2", "PDPA"]
+        }
+      ]
+    },
+    "internationalization": {
+      "enabled": true,
+      "default_locale": "en_US",
+      "supported_locales": [
+        {
+          "code": "en_US",
+          "name": "English (US)",
+          "direction": "ltr",
+          "number_format": "#,##0.##",
+          "date_format": "MM/dd/yyyy",
+          "carbon_units": "kg_co2"
+        },
+        {
+          "code": "es_ES",
+          "name": "Español (España)",
+          "direction": "ltr",
+          "number_format": "#.##0,##",
+          "date_format": "dd/MM/yyyy",
+          "carbon_units": "kg_co2"
+        },
+        {
+          "code": "fr_FR",
+          "name": "Français (France)",
+          "direction": "ltr",
+          "number_format": "# ##0,##",
+          "date_format": "dd/MM/yyyy",
+          "carbon_units": "kg_co2"
+        },
+        {
+          "code": "de_DE",
+          "name": "Deutsch (Deutschland)",
+          "direction": "ltr",
+          "number_format": "#.##0,##",
+          "date_format": "dd.MM.yyyy",
+          "carbon_units": "kg_co2"
+        },
+        {
+          "code": "ja_JP",
+          "name": "日本語 (日本)",
+          "direction": "ltr",
+          "number_format": "#,##0.##",
+          "date_format": "yyyy/MM/dd",
+          "carbon_units": "kg_co2"
+        },
+        {
+          "code": "zh_CN",
+          "name": "中文 (中国)",
+          "direction": "ltr",
+          "number_format": "#,##0.##",
+          "date_format": "yyyy/MM/dd",
+          "carbon_units": "kg_co2"
+        }
+      ]
+    },
+    "compliance": {
+      "gdpr": {
+        "enabled": true,
+        "data_retention_days": 730,
+        "consent_required": true,
+        "right_to_deletion": true,
+        "data_portability": true,
+        "privacy_by_design": true
+      },
+      "ccpa": {
+        "enabled": true,
+        "consumer_rights": true,
+        "opt_out_mechanism": true,
+        "data_categories_disclosure": true
+      },
+      "pdpa": {
+        "enabled": true,
+        "notification_requirements": true,
+        "consent_management": true,
+        "data_breach_notification": true
+      },
+      "soc2": {
+        "enabled": true,
+        "security_controls": true,
+        "availability_monitoring": true,
+        "processing_integrity": true,
+        "confidentiality": true
+      }
+    },
+    "carbon_data_sources": {
+      "electricity_maps": {
+        "enabled": true,
+        "api_endpoint": "https://api.electricitymap.org/v3",
+        "regions": ["US", "EU", "JP", "CN", "CA", "AU"]
+      },
+      "watttime": {
+        "enabled": true,
+        "api_endpoint": "https://api2.watttime.org/v2",
+        "regions": ["US", "EU"]
+      },
+      "carbon_intensity_api": {
+        "enabled": true,
+        "api_endpoint": "https://api.carbonintensity.org.uk",
+        "regions": ["GB"]
+      }
+    },
+    "deployment_matrix": {
+      "environments": [
+        {
+          "name": "development",
+          "regions": ["us-east-1"],
+          "scaling": "minimal",
+          "monitoring": "basic"
+        },
+        {
+          "name": "staging", 
+          "regions": ["us-east-1", "eu-west-1"],
+          "scaling": "moderate",
+          "monitoring": "enhanced"
+        },
+        {
+          "name": "production",
+          "regions": ["us-east-1", "eu-west-1", "ap-northeast-1"],
+          "scaling": "full",
+          "monitoring": "comprehensive"
+        }
+      ]
+    }
+  }
+}
