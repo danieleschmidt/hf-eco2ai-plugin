@@ -1,0 +1,10 @@
+{
+  "environment": "production",
+  "debug": false,
+  "log_level": "INFO",
+  "replicas": 5,
+  "resources": {
+    "cpu": "1000m",
+    "memory": "1Gi"
+  }
+}

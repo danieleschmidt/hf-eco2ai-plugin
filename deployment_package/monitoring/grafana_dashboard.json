@@ -1,0 +1,41 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "TERRAGON SDLC v5.0 - Carbon Intelligence Monitoring",
+    "tags": [
+      "terragon",
+      "carbon",
+      "ai"
+    ],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Carbon Emissions Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(carbon_emissions_total[5m])",
+            "legendFormat": "CO2 kg/sec"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "AI Processing Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(ai_processing_total[5m])",
+            "legendFormat": "Predictions/sec"
+          }
+        ]
+      }
+    ],
+    "refresh": "10s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+  }
+}

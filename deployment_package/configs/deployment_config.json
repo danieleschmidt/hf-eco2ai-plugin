@@ -1,0 +1,46 @@
+{
+  "version": "5.0.0",
+  "deployment_id": "terragon_sdlc_v5_deployment_1756146283",
+  "timestamp": "2025-08-25T18:24:43.900420",
+  "regions": [
+    "us-east-1",
+    "eu-west-1",
+    "ap-northeast-1"
+  ],
+  "scaling_config": {
+    "min_replicas": 3,
+    "max_replicas": 50,
+    "target_cpu_utilization": 70,
+    "target_memory_utilization": 80,
+    "scaling_policies": {
+      "scale_up_threshold": 0.8,
+      "scale_down_threshold": 0.3,
+      "scale_up_cooldown": 300,
+      "scale_down_cooldown": 600
+    }
+  },
+  "monitoring_config": {
+    "prometheus_enabled": true,
+    "grafana_enabled": true,
+    "alertmanager_enabled": true,
+    "log_level": "INFO",
+    "metrics_retention": "30d",
+    "custom_dashboards": true
+  },
+  "security_config": {
+    "tls_enabled": true,
+    "authentication_required": true,
+    "rbac_enabled": true,
+    "network_policies": true,
+    "pod_security_standards": "restricted",
+    "secrets_encryption": true
+  },
+  "performance_config": {
+    "quantum_optimization": true,
+    "caching_enabled": true,
+    "connection_pooling": true,
+    "compression_enabled": true,
+    "cdn_enabled": true,
+    "performance_monitoring": true
+  }
+}

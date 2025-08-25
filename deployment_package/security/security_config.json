@@ -1,0 +1,30 @@
+{
+  "security_standards": {
+    "pod_security_standard": "restricted",
+    "seccomp_profile": {
+      "type": "RuntimeDefault"
+    },
+    "run_as_non_root": true,
+    "run_as_user": 1000,
+    "run_as_group": 1000,
+    "fs_group": 1000,
+    "capabilities": {
+      "drop": [
+        "ALL"
+      ],
+      "add": []
+    }
+  },
+  "tls_configuration": {
+    "min_tls_version": "1.2",
+    "cipher_suites": [
+      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+    ]
+  },
+  "authentication": {
+    "method": "jwt",
+    "token_expiry": "1h",
+    "refresh_token_expiry": "7d"
+  }
+}
