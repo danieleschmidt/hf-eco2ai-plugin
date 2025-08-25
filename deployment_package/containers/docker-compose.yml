@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  hf-eco2ai:
+    build:
+      context: ../
+      dockerfile: containers/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - TERRAGON_ENV=development
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ../src:/app/src:ro
+    depends_on:
+      - redis
+      - prometheus
+      
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  redis_data:
+  grafana_data:

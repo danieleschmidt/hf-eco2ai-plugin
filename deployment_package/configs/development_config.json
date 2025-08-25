@@ -1,0 +1,10 @@
+{
+  "environment": "development",
+  "debug": true,
+  "log_level": "DEBUG",
+  "replicas": 1,
+  "resources": {
+    "cpu": "100m",
+    "memory": "128Mi"
+  }
+}
