@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hf-eco2ai-plugin-deployment
+  namespace: hf-eco2ai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hf-eco2ai-plugin
+  template:
+    metadata:
+      labels:
+        app: hf-eco2ai-plugin
+    spec:
+      containers:
+      - name: hf-eco2ai-plugin
+        image: hf-eco2ai-plugin:1.0.0
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 2Gi

@@ -1,0 +1,51 @@
+{
+  "deployment_id": "98794619",
+  "timestamp": "2025-08-26T20:46:45.505503",
+  "config": {
+    "project_name": "hf-eco2ai-plugin",
+    "version": "1.0.0",
+    "environment": "production",
+    "namespace": "hf-eco2ai",
+    "replicas": 3,
+    "features": {
+      "hpa_enabled": true,
+      "monitoring_enabled": true,
+      "security_enabled": true,
+      "rbac_enabled": true
+    }
+  },
+  "artifacts": {
+    "docker": {
+      "files": [
+        "Dockerfile",
+        "docker-compose.yml"
+      ]
+    },
+    "kubernetes": {
+      "files": [
+        "deployment.yaml"
+      ]
+    },
+    "monitoring": {
+      "files": []
+    },
+    "cicd": {
+      "files": []
+    },
+    "documentation": {
+      "files": []
+    }
+  },
+  "deployment_checklist": [
+    "Build and test Docker image",
+    "Push image to container registry",
+    "Apply Kubernetes manifests",
+    "Verify deployment health",
+    "Configure monitoring and alerting",
+    "Set up CI/CD pipeline",
+    "Perform security scan",
+    "Load testing",
+    "Documentation review",
+    "Production readiness sign-off"
+  ]
+}

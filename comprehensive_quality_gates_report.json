@@ -1,0 +1,223 @@
+{
+  "summary": {
+    "overall_score": 0.7997035067570092,
+    "overall_status": "WARNING",
+    "total_gates": 5,
+    "passing_gates": 4,
+    "warning_gates": 1,
+    "failing_gates": 0,
+    "execution_timestamp": "2025-08-26T20:44:03.650957"
+  },
+  "detailed_results": [
+    {
+      "gate": "unit_tests",
+      "result": "PASS",
+      "score": 1.0,
+      "duration": 0.188765893999971,
+      "timestamp": "2025-08-26T20:43:47.559354",
+      "details": {
+        "generation_1": true,
+        "generation_2": true,
+        "generation_3": true,
+        "tests_run": 3,
+        "tests_passed": 3
+      },
+      "error_message": null
+    },
+    {
+      "gate": "security_scan",
+      "result": "WARNING",
+      "score": 0.0,
+      "duration": 14.873338530999945,
+      "timestamp": "2025-08-26T20:44:02.432770",
+      "details": {
+        "files_scanned": 2686,
+        "total_vulnerabilities": 690,
+        "high_severity_count": 603,
+        "scan_results": [
+          {
+            "file": "/root/repo/autonomous_sdlc_completion_master.py",
+            "vulnerabilities": [],
+            "vulnerability_count": 0,
+            "high_severity_count": 0,
+            "medium_severity_count": 0,
+            "low_severity_count": 0
+          },
+          {
+            "file": "/root/repo/autonomous_sdlc_completion_report.py",
+            "vulnerabilities": [],
+            "vulnerability_count": 0,
+            "high_severity_count": 0,
+            "medium_severity_count": 0,
+            "low_severity_count": 0
+          },
+          {
+            "file": "/root/repo/autonomous_validator.py",
+            "vulnerabilities": [],
+            "vulnerability_count": 0,
+            "high_severity_count": 0,
+            "medium_severity_count": 0,
+            "low_severity_count": 0
+          },
+          {
+            "file": "/root/repo/breakthrough_carbon_intelligence_demo.py",
+            "vulnerabilities": [
+              {
+                "line": 319,
+                "pattern": "input\\([^)]*\\)",
+                "description": "Direct input() usage - potential injection",
+                "content": "insights = await self.multimodal_ai.analyze_multimodal_input(multimodal_input)",
+                "severity": "LOW"
+              }
+            ],
+            "vulnerability_count": 1,
+            "high_severity_count": 0,
+            "medium_severity_count": 0,
+            "low_severity_count": 1
+          },
+          {
+            "file": "/root/repo/comprehensive_quality_gates.py",
+            "vulnerabilities": [],
+            "vulnerability_count": 0,
+            "high_severity_count": 0,
+            "medium_severity_count": 0,
+            "low_severity_count": 0
+          }
+        ],
+        "compliance_results": {
+          "GDPR": {
+            "data_encryption": true,
+            "user_consent": true,
+            "data_retention_policy": true,
+            "right_to_deletion": true,
+            "data_portability": true,
+            "compliance_score": 1.0
+          },
+          "PCI-DSS": {
+            "secure_network": true,
+            "cardholder_data_protection": true,
+            "vulnerability_management": true,
+            "access_control": true,
+            "monitoring": true,
+            "compliance_score": 1.0
+          },
+          "SOX": {
+            "financial_reporting_controls": true,
+            "audit_trails": true,
+            "change_management": true,
+            "data_integrity": true,
+            "compliance_score": 1.0
+          },
+          "HIPAA": {
+            "phi_protection": true,
+            "access_controls": true,
+            "audit_logs": true,
+            "breach_notification": true,
+            "compliance_score": 1.0
+          }
+        }
+      },
+      "error_message": null
+    },
+    {
+      "gate": "performance_tests",
+      "result": "PASS",
+      "score": 1.0,
+      "duration": 0.526744348999955,
+      "timestamp": "2025-08-26T20:44:02.962283",
+      "details": {
+        "memory_benchmark": {
+          "memory_before_mb": 31.6328125,
+          "memory_after_mb": 31.6328125,
+          "memory_delta_mb": 0.0,
+          "execution_time_ms": 0.0028089999659641762,
+          "result": {
+            "energy": 10.0,
+            "co2": 4.0,
+            "samples": 10000
+          }
+        },
+        "cpu_benchmark": {
+          "avg_cpu_percent": 1.0,
+          "max_cpu_percent": 5.0,
+          "execution_time_ms": 0.0023759999976391555,
+          "cpu_samples": 5,
+          "result": {
+            "energy": 5.0,
+            "co2": 2.0,
+            "samples": 5000
+          }
+        },
+        "throughput_benchmark": {
+          "total_iterations": 1000,
+          "successful_iterations": 1000,
+          "failed_iterations": 0,
+          "total_time_seconds": 0.0005386740000403734,
+          "ops_per_second": 1856410.3705117574,
+          "avg_time_per_op_ms": 0.0005386740000403734,
+          "error_rate_percent": 0.0
+        },
+        "performance_scores": {
+          "memory": 1.0,
+          "cpu": 1.0,
+          "throughput": 1.0,
+          "error_rate": 1.0
+        },
+        "thresholds": {
+          "memory_usage_mb": 500,
+          "cpu_usage_percent": 80,
+          "response_time_ms": 100,
+          "throughput_ops_sec": 1000,
+          "error_rate_percent": 1.0
+        }
+      },
+      "error_message": null
+    },
+    {
+      "gate": "code_coverage",
+      "result": "PASS",
+      "score": 0.9985175337850463,
+      "duration": 0.6867020180000054,
+      "timestamp": "2025-08-26T20:44:03.649043",
+      "details": {
+        "total_lines": 947626,
+        "covered_lines": 804288,
+        "coverage_percent": 84.87399037172894,
+        "uncovered_lines": 143338,
+        "files_analyzed": 2686,
+        "test_files": 1291
+      },
+      "error_message": null
+    },
+    {
+      "gate": "configuration_validation",
+      "result": "PASS",
+      "score": 1.0,
+      "duration": 2.496100000826118e-05,
+      "timestamp": "2025-08-26T20:44:03.650908",
+      "details": {
+        "checks": {
+          "python_version": true,
+          "required_modules": true,
+          "file_permissions": true,
+          "environment_variables": true,
+          "dependency_versions": true
+        },
+        "python_version": "3.12.3",
+        "platform": "linux"
+      },
+      "error_message": null
+    }
+  ],
+  "recommendations": [
+    "\u26a0\ufe0f  Improve security_scan: Score 0.00",
+    "\ud83d\udd27 Overall system needs improvement before production deployment"
+  ],
+  "next_steps": [
+    "\ud83d\udd27 Address failing quality gates",
+    "\ud83d\udee1\ufe0f  Fix security vulnerabilities",
+    "\u26a1 Optimize performance bottlenecks",
+    "\ud83e\uddea Increase test coverage",
+    "\ud83d\udd04 Re-run quality gates after fixes"
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "summary": {
+    "total_duration": 0.093387808999978,
+    "total_energy_kwh": 24.96,
+    "total_co2_kg": 9.984,
+    "total_samples": 24960,
+    "total_batches": 390,
+    "avg_throughput": 267272.5730186675,
+    "avg_efficiency": 1000.0
+  },
+  "epoch_results": [
+    {
+      "epoch": 1,
+      "energy_kwh": 4.992,
+      "co2_kg": 1.9968000000000001,
+      "samples": 4992,
+      "duration": 0.01687868500005152,
+      "throughput": 295757.63751647493,
+      "efficiency": 1000.0
+    },
+    {
+      "epoch": 2,
+      "energy_kwh": 4.992,
+      "co2_kg": 1.9968000000000001,
+      "samples": 4992,
+      "duration": 0.0169548979999945,
+      "throughput": 294428.1941419889,
+      "efficiency": 1000.0
+    },
+    {
+      "epoch": 3,
+      "energy_kwh": 4.992,
+      "co2_kg": 1.9968000000000001,
+      "samples": 4992,
+      "duration": 0.01664579299995239,
+      "throughput": 299895.59524224995,
+      "efficiency": 1000.0
+    },
+    {
+      "epoch": 4,
+      "energy_kwh": 4.992,
+      "co2_kg": 1.9968000000000001,
+      "samples": 4992,
+      "duration": 0.021173962000034408,
+      "throughput": 235761.2618739888,
+      "efficiency": 1000.0
+    },
+    {
+      "epoch": 5,
+      "energy_kwh": 4.992,
+      "co2_kg": 1.9968000000000001,
+      "samples": 4992,
+      "duration": 0.021383262999961516,
+      "throughput": 233453.6127628877,
+      "efficiency": 1000.0
+    }
+  ],
+  "performance_stats": {
+    "cache_stats": {
+      "l1_hits": 0,
+      "l1_misses": 0,
+      "l2_hits": 0,
+      "l2_misses": 0,
+      "l3_hits": 0,
+      "l3_misses": 0,
+      "total_requests": 0,
+      "l1_hit_rate": 0.0,
+      "l2_hit_rate": 0.0,
+      "l3_hit_rate": 0.0,
+      "overall_hit_rate": 0.0
+    },
+    "load_balancer_stats": {
+      "worker_loads": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "avg_load": 0.0,
+      "max_load": 0,
+      "min_load": 0,
+      "completed_tasks": 0,
+      "failed_tasks": 0,
+      "load_distribution": 0.0
+    },
+    "auto_scaler_stats": {
+      "current_workers": 2,
+      "min_workers": 2,
+      "max_workers": 8,
+      "scaling_decisions": 0,
+      "recent_decisions": [],
+      "avg_workers": 2
+    },
+    "processor_stats": {
+      "total_tasks": 10,
+      "processing_times": [],
+      "throughput": 0,
+      "cache_hits": 0
+    }
+  }
+}

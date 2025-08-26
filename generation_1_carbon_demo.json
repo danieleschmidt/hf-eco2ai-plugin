@@ -1,0 +1,22 @@
+{
+  "report_id": "llama-finetuning-demo_20250826_204347",
+  "config": {
+    "project_name": "llama-finetuning-demo",
+    "country": "USA",
+    "region": "CA"
+  },
+  "metrics": {
+    "energy_kwh": 1.9200000000000013,
+    "co2_kg": 0.7680000000000006,
+    "duration_seconds": 6.7e-05,
+    "samples_processed": 960,
+    "efficiency": 499.99999999999966,
+    "carbon_per_sample": 0.0008000000000000006,
+    "timestamp": "2025-08-26T20:43:47.375231"
+  },
+  "environmental_impact": {
+    "driving_km_equivalent": 3.2256000000000027,
+    "trees_needed": 0.09216000000000006,
+    "carbon_cost_usd": 0.15360000000000013
+  }
+}
