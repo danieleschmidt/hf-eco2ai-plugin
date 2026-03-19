@@ -5,270 +5,71 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hf-eco2ai-plugin"
 version = "1.0.0"
-description = "Enterprise-grade Hugging Face CO₂ tracking with advanced carbon intelligence and quantum optimization"
+description = "HuggingFace Trainer plugin for tracking carbon emissions during ML training"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Daniel Schmidt", email = "daniel@terragonlabs.com"},
-    {name = "TerragonLabs Enterprise Team", email = "enterprise@terragonlabs.com"}
-]
-maintainers = [
-    {name = "TerragonLabs Support", email = "support@terragonlabs.com"}
+    {name = "Daniel Schmidt", email = "danschmidt88@gmail.com"},
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: System Administrators",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Monitoring",
-    "Topic :: Utilities",
-    "Environment :: Console",
-    "Environment :: Web Environment",
-    "Framework :: AsyncIO",
     "Typing :: Typed",
 ]
 keywords = [
-    "huggingface", "transformers", "carbon", "eco2ai", "sustainability", "ml",
-    "enterprise", "monitoring", "observability", "quantum", "optimization",
-    "kubernetes", "docker", "production", "cicd", "devops", "carbon-tracking",
-    "environmental", "green-ai", "mlops", "prometheus", "grafana"
+    "huggingface", "transformers", "carbon", "eco2ai", "sustainability",
+    "green-ai", "emissions", "mlops", "carbon-tracking"
 ]
 requires-python = ">=3.10"
-dependencies = [
-    "transformers>=4.40.0",
-    "torch>=2.0.0",
-    "eco2ai>=0.3.12",
-    "pynvml>=11.5.0",
-    "prometheus-client>=0.20.0",
-    "pandas>=2.0.0",
-    "plotly>=5.20.0",
-    "carbontracker>=1.5.0",
-    "codecarbon>=2.3.0",
-]
+# Zero hard dependencies — works out of the box
+# Install transformers separately for real HF Trainer integration
+dependencies = []
 
 [project.optional-dependencies]
-lightning = ["pytorch-lightning>=2.2.0"]
-mlflow = ["mlflow>=2.0.0"]
-grafana = ["grafana-api>=1.0.3"]
-ai-ops = [
-    "opentelemetry-api>=1.20.0",
-    "opentelemetry-sdk>=1.20.0", 
-    "opentelemetry-instrumentation-requests>=0.41b0",
-    "structlog>=23.0.0",
-    "rich>=13.0.0"
-]
-optimization = [
-    "numba>=0.58.0",
-    "asyncio-throttle>=1.0.2",
-    "aiohttp>=3.9.0",
-    "orjson>=3.9.0"
-]
+transformers = ["transformers>=4.40.0"]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
-    "pytest-mock>=3.10.0",
-    "pytest-benchmark>=4.0.0",
-    "pytest-xdist>=3.0.0", 
-    "black>=23.0.0",
-    "ruff>=0.1.0",
-    "mypy>=1.5.0",
-    "pre-commit>=3.0.0",
-    "sphinx>=6.0.0",
-    "sphinx-rtd-theme>=1.3.0",
-    "bandit[toml]>=1.7.5",
-    "safety>=2.3.0",
-    "pip-audit>=2.6.0",
-    "mutmut>=2.4.0",
-    "cyclonedx-bom>=4.0.0",
-    "git-cliff>=1.4.0",
-]
-enterprise = [
-    "redis>=5.0.0",
-    "celery>=5.3.0",
-    "kubernetes>=28.0.0",
-    "docker>=7.0.0",
-    "psutil>=5.9.0",
-    "uvicorn[standard]>=0.24.0",
-    "fastapi>=0.104.0",
-    "sqlalchemy>=2.0.0",
-    "alembic>=1.12.0",
-    "pydantic-settings>=2.0.0",
-]
-production = [
-    "gunicorn>=21.0.0",
-    "uvloop>=0.19.0",
-    "httptools>=0.6.0",
-    "watchfiles>=0.21.0",
-    "python-multipart>=0.0.6",
-    "python-jose[cryptography]>=3.3.0",
-    "passlib[bcrypt]>=1.7.4",
-    "python-loguru>=0.7.0"
-]
-monitoring = [
-    "datadog>=0.47.0",
-    "newrelic>=9.0.0",
-    "sentry-sdk[fastapi]>=1.38.0",
-    "elastic-apm>=6.20.0",
-    "jaeger-client>=4.8.0"
-]
-all = [
-    "hf-eco2ai-plugin[lightning,mlflow,grafana,ai-ops,optimization,enterprise,production,monitoring,dev]"
 ]
 
 [project.urls]
-Homepage = "https://github.com/terragonlabs/hf-eco2ai-plugin"
-Documentation = "https://hf-eco2ai.readthedocs.io"
-Repository = "https://github.com/terragonlabs/hf-eco2ai-plugin"
-"Bug Tracker" = "https://github.com/terragonlabs/hf-eco2ai-plugin/issues"
-Changelog = "https://github.com/terragonlabs/hf-eco2ai-plugin/blob/main/CHANGELOG.md"
-
-[project.scripts]
-hf-eco2ai = "hf_eco2ai.cli:main"
+Homepage = "https://github.com/danieleschmidt/hf-eco2ai-plugin"
+Repository = "https://github.com/danieleschmidt/hf-eco2ai-plugin"
+"Bug Tracker" = "https://github.com/danieleschmidt/hf-eco2ai-plugin/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-hf_eco2ai = ["py.typed", "data/*.json"]
+hf_eco2ai = ["py.typed"]
 
-[tool.black]
-line-length = 88
-target-version = ["py310", "py311", "py312"]
-include = '\.pyi?$'
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = ["--strict-markers", "-v"]
+markers = [
+    "slow: marks tests as slow",
+    "gpu: marks tests that require GPU",
+]
 
 [tool.ruff]
 target-version = "py310"
 line-length = 88
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "UP", # pyupgrade
-]
-ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
-]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests/*" = ["B011"]
-
-[tool.mypy]
-python_version = "3.10"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
-
-[[tool.mypy.overrides]]
-module = [
-    "eco2ai.*",
-    "pynvml.*",
-    "carbontracker.*",
-    "codecarbon.*",
-    "prometheus_client.*",
-    "grafana_api.*",
-]
-ignore_missing_imports = true
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = [
-    "--strict-markers",
-    "--strict-config",
-    "--cov=hf_eco2ai",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
-]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests", 
-    "gpu: marks tests that require GPU",
-    "contract: marks tests as API contract tests",
-    "mutation: marks tests for mutation testing",
-]
-
-[tool.coverage.run]
-source = ["src"]
-omit = [
-    "*/tests/*",
-    "*/test_*",
-    "*/__main__.py",
-]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "if self.debug:",
-    "if settings.DEBUG",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if 0:",
-    "if __name__ == .__main__.:",
-    "class .*\\bProtocol\\):",
-    "@(abc\\.)?abstractmethod",
-]
-
-[tool.bandit]
-exclude_dirs = ["tests"]
-skips = ["B101", "B601"]
-
-[tool.bandit.assert_used]
-skips = ["*_test.py", "*/test_*.py"]
-
-[tool.mutmut]
-paths_to_mutate = "src/"
-backup = false
-runner = "python -m pytest tests/"
-tests_dir = "tests/"
-
-[tool.git-cliff.changelog]
-header = """
-# Changelog
-
-All notable changes to this project will be documented in this file.
-"""
-body = """
-{% if version %}\
-    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
-{% else %}\
-    ## [Unreleased]
-{% endif %}\
-{% for group, commits in commits | group_by(attribute="group") %}
-    ### {{ group | striptags | trim | upper_first }}
-    {% for commit in commits %}
-        - {{ commit.message | upper_first }}
-    {% endfor %}
-{% endfor %}\n
-"""
-footer = """
-<!-- generated by git-cliff -->
-"""

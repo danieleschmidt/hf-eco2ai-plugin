@@ -1,9 +1,0 @@
-{
-  "health_check_interval": 30,
-  "metric_retention_hours": 24,
-  "alert_thresholds": {
-    "cpu_usage": 90,
-    "memory_usage": 85,
-    "disk_usage": 95
-  }
-}
